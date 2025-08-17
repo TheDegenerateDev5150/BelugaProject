@@ -12,7 +12,7 @@ Spring Boot Angular web application that displays data of one or multiple, local
 <img alt="Web View" src="assets/images/demo.gif"\>
 </p>
 
-Currently you can use this application out of the box with [Flightradar24](https://www.flightradar24.com/), [tar1090](https://github.com/wiedehopf/tar1090), [AirSquitter](https://airsquitter.com/) or [VirtualRadarServer](https://www.virtualradarserver.co.uk/) (Rebroadcast Server only) feeders. Other ADS-B feeders can be added aswell.
+Currently you can use this application out of the box with [Flightradar24](https://www.flightradar24.com/), [tar1090](https://github.com/wiedehopf/tar1090), [AirSquitter](https://airsquitter.com/) or [VirtualRadarServer](https://www.virtualradarserver.co.uk/) feeders. Other ADS-B feeders can be added aswell.
 
 It is possible to run the application only with data from the [OpenSky-Network](https://opensky-network.org/), if you have an account there. Besides you can use data from [Airplanes.live](https://airplanes.live/). So you need no local feeders to try out the app.
 
@@ -32,7 +32,7 @@ We started our ADS-B experience with an [AirSquitter](https://airsquitter.com) r
 
 - View the application on your desktop or mobile (for the android app see folder "android_app")
 - Display aircraft and airports on a 2D map in the browser
-  - Aircraft from your local ADS-B feeders (like tar1090, AirSquitter, fr24feeder, vrs)
+  - Aircraft from your local ADS-B feeders (like tar1090, AirSquitter, fr24feeder, Virtual Radar Server)
   - Aircraft from [OpenSky-Network](https://opensky-network.org/) (update interval is 5 seconds)
   - Aircraft from [Airplanes.live](https://airplanes.live/) (update interval is 5 seconds)
   - The ISS (International Space Station)

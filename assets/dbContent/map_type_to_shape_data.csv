@@ -171,7 +171,6 @@ C152	RexKramer1	Cessna 152	C172	0.75	2023-07-27 00:00:00
 C162	RexKramer1	Cessna 162	C172	0.75	2023-07-27 00:00:00
 C182	RexKramer1	Cessna 182 Skylane	C172	0.75	2023-07-27 00:00:00
 C208	RexKramer1	Cessna 208 Grand Caravan	C208	0.65	2023-07-27 00:00:00
-C42	RexKramer1	Ikarus C-42 Bison	F406	0.65	2023-07-27 00:00:00
 C560	RexKramer1	Cessna 560 Citation 5	JET_nonswept	0.5	2023-07-27 00:00:00
 C680	RexKramer1	Cessna 680 Citation Sovereign	JET_swept	0.4	2023-07-27 00:00:00
 C68A	RexKramer1	Cessna 680A Citation Latitude	JET_swept	0.4	2023-07-27 00:00:00
@@ -361,7 +360,6 @@ T37	RexKramer1	Cessna T-37	PA28	0.9	2023-07-27 00:00:00
 T4	RexKramer1	Kawasaki T-4	EUFI	0.9	2023-07-27 00:00:00
 TB20	RexKramer1	Soccata TB-20	PA28	0.7	2023-07-27 00:00:00
 TU22	RexKramer1	Tupolev Tu-22	EUFI	0.9	2023-07-27 00:00:00
-TWR	RexKramer1	invalid icao type designator	ground_tower	0.5	2023-07-27 00:00:00
 Y130	RexKramer1	Yakolev Yak-130	EUFI	0.9	2023-07-27 00:00:00
 YK28	RexKramer1	Yakolev Yak-28	EUFI	0.9	2023-07-27 00:00:00
 ARCP	RexKramer1	Schempp-Hirth Arcus T/M	AS21	0.7	2023-07-27 00:00:00
@@ -634,9 +632,48 @@ E400	RexKramer1	Extra EA-400	F406	0.65	2023-07-27 00:00:00
 E737	RexKramer1	Boeing 737-700 Wedgetail	E737	0.5	2023-07-27 00:00:00
 EH10	RexKramer1	AgustaWestland EH-101 Merlin	S61	0.8	2023-07-27 00:00:00
 F35	RexKramer1	F-35A/C Lightning 2	F35	0.7	2023-07-27 00:00:00
-FA6X	RexKramer1	Dassault Falcon 6X	JET_swept	0.4	2023-07-27 00:00:00
 H53	RexKramer1	Sikorsky CH53	S61	0.8	2023-07-27 00:00:00
 KC46	RexKramer1	Boeing KC-46 Pegasus (ICAO Type designator = B762)	KC46	0.5	2023-07-27 00:00:00
 LJ36	RexKramer1	Lear Jet 36	LJ35	0.7	2023-07-27 00:00:00
 P8	RexKramer1	Boeing P-8 Poseidon	P8	0.5	2023-07-27 00:00:00
 VF35	RexKramer1	F-35B Lightning 2	VF35	0.7	2023-07-27 00:00:00
+B36T	RexKramer1	Beech 36 Bonanza (Turbine)	PA28	0.7	2025-09-03 00:00:00
+FA6X	RexKramer1	Dassault Falcon 6X	JET_swept	0.4	2023-07-27 00:00:00
+AEST	RexKramer1	Piper Aerostar	F406	0.65	2.1
+C42	RexKramer1	Ikarus C-42 Bison	DO27	0.55	2023-07-27 00:00:00
+TWR	RexKramer1	invalid icao type designator	ground_tower	0.25	2025-09-03 00:00:00
+AN28	RexKramer1	Antonov AN-28	SC7	0.55	2025-09-03 00:00:00
+B212	RexKramer1	Bell 212	UH1	0.9	2025-09-03 00:00:00
+BE50	RexKramer1	Beech 50 Twin Bonanza	F406	0.65	2025-09-03 00:00:00
+BE76	RexKramer1	Beech 76 Duchess	F406	0.65	2025-09-03 00:00:00
+BU33	RexKramer1	Buecker Bu-133 Jungmeister	ST75	0.7	2025-09-03 00:00:00
+C10T	RexKramer1	Cessna P210 (Turbine)	C172	0.75	2025-09-03 00:00:00
+C185	RexKramer1	Cessna 185 Skywagon	C172	0.75	2025-09-03 00:00:00
+C82T	RexKramer1	Cessna TR182 Turbo Skylane RG	C172	0.75	2025-09-03 00:00:00
+DHC1	RexKramer1	DHC-1 Chipmunk	PC9	0.8	2025-09-03 00:00:00
+E121	RexKramer1	EMB-121 Xingu	F406	0.65	2025-09-03 00:00:00
+EC30	RexKramer1	EC-130	EC35	0.8	2025-09-03 00:00:00
+F27	RexKramer1	Fokker F27 Friendship	F50	0.5	2025-09-03 00:00:00
+F70	RexKramer1	Fokker F70	JET_swept	0.5	2025-09-03 00:00:00
+G2CA	RexKramer1	Guimbal G-2 Cabri	R44	0.9	2025-09-03 00:00:00
+GA7C	RexKramer1	G-8 Gulfstream G700	GLF6	0.55	2025-09-03 00:00:00
+GALX	unknown	IAI Galaxy / Gulfstream G200	JET_swept	0.35	2025-09-03 00:00:00
+H269	RexKramer1	Hughes 269 Sky Knight	R44	0.9	2025-09-03 00:00:00
+HR10	RexKramer1	Robin HR-100	PA28	0.7	2025-09-03 00:00:00
+HR20	RexKramer1	Robin HR-200	PA28	0.7	2025-09-03 00:00:00
+JS32	RexKramer1	BAe-3200 Jetstream Super 31	ATP	0.5	2025-09-03 00:00:00
+M28	RexKramer1	PZL-Mielec M-28 Skytruck	SC7	0.55	2025-09-03 00:00:00
+M5	RexKramer1	Maule M-5	DO27	0.65	2025-09-03 00:00:00
+M7	RexKramer1	Maule M-7	DO27	0.65	2025-09-03 00:00:00
+M700	RexKramer1	Piper PA46-701TP M700 Fury	PA46	0.7	2025-09-03 00:00:00
+P208	RexKramer1	Tecnam P-2008	C172	0.75	2025-09-03 00:00:00
+P28S	RexKramer1	Piper PA28R-201T Turbo Cherokee Arrow 3	PA28	0.7	2025-09-03 00:00:00
+P28U	RexKramer1	Piper PA28R-201T Turbo Arrow 4	PA28	0.7	2025-09-03 00:00:00
+P337	RexKramer1	Cessna P337 Pressurized Skymaster	C172	0.75	2025-09-03 00:00:00
+PC21	RexKramer1	Pilatus PC21	PC9	0.8	2025-09-03 00:00:00
+PTS1	RexKramer1	Pitts S-1 Special	ST75	0.7	2025-09-03 00:00:00
+QINT	RexKramer1	Schemp-Hirth Quintus	AS21	0.7	2025-09-03 00:00:00
+SB20	RexKramer1	Saab 2000	SF34	0.6	2025-09-03 00:00:00
+SB37	RexKramer1	Saab 37 Viggen	EUFI	0.9	2025-09-03 00:00:00
+SB91	RexKramer1	Saab 91 Safir	PA28	0.7	2025-09-03 00:00:00
+SF28	RexKramer1	SF-28 Tandem Falke	SF25	0.65	2025-09-03 00:00:00

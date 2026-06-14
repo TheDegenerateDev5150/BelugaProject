@@ -15,7 +15,7 @@ ext {
   jsonVersion = "20260522"
   hypersistenceVersion = "3.15.3"
   okhttpVersion = "5.4.0"
-  lombokVersion = "1.18.38"
+  lombokVersion = "1.18.46"
   mockServerVersion = "1.0.17"
   nettyVersion = "4.2.2.Final"
 }

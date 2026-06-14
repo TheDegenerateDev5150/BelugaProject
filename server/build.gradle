@@ -17,7 +17,7 @@ ext {
   okhttpVersion = "5.4.0"
   lombokVersion = "1.18.46"
   mockServerVersion = "2.50.9"
-  nettyVersion = "4.2.2.Final"
+  nettyVersion = "4.2.15.Final"
 }
 
 repositories {

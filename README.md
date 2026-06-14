@@ -47,7 +47,7 @@ We started our ADS-B experience with an [AirSquitter](https://airsquitter.com) r
 - See additional information about tracked aircraft like model and type, country of registration, operator callsign and more
 - Track flight progress with route information (origin, destination)
 - Display aircraft picture from planespotters.net
-- Show weather information (current, forecast, clouds) from [Rainviewer](https://www.rainviewer.com/)
+- Show weather information (current, forecast) from [Rainviewer](https://www.rainviewer.com/)
 - Filter option for military planes
 - Choose one of several map styles (2D/3D map, for some of the 2D maps an API key from [Geoapify](https://www.geoapify.com/) is required)
 - Display aircraft in a sortable table

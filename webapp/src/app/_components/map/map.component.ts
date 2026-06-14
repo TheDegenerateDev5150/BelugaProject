@@ -212,17 +212,11 @@ export class MapComponent implements OnInit {
   // Boolean, ob RainViewer (Rain) Data sichtbar ist
   showRainViewerRain: boolean = false;
 
-  // Boolean, ob RainViewer (Clouds) Data sichtbar ist
-  showRainViewerClouds: boolean = false;
-
   // Boolean, ob RainViewer Forecast (Rain) Data sichtbar ist
   showRainViewerRainForecast: boolean = false;
 
   // Layer für die Rainviewer Daten (Regen)
   rainviewerRainLayer: TileLayer<XYZ> = new TileLayer();
-
-  // Layer für die Rainviewer Daten (Clouds)
-  rainviewerCloudsLayer: TileLayer<XYZ> = new TileLayer();
 
   // Urls für RainViewer Forecast
   forecastRainPathAndTime: any[] = [];
@@ -689,13 +683,6 @@ export class MapComponent implements OnInit {
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((showRainViewerRain) =>
         this.createOrHideRainViewerRain(showRainViewerRain)
-      );
-
-    // Toggle Rainviewer (Clouds)
-    this.settingsService.rainViewerClouds$
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe((showRainViewerClouds) =>
-        this.createOrHideRainViewerClouds(showRainViewerClouds)
       );
 
     // Toggle Rainviewer Forecast (Rain)
@@ -3209,10 +3196,9 @@ export class MapComponent implements OnInit {
       this.stopRainForecastAnimation();
     }
 
-    // Stoppe requests nach rainviewer, wenn weder rain noch clouds angezeigt werden sollen
+    // Stoppe requests nach rainviewer
     if (
       !this.showRainViewerRain &&
-      !this.showRainViewerClouds &&
       !this.showRainViewerRainForecast
     ) {
       this.stopRequestsToRainviewer();
@@ -3222,47 +3208,6 @@ export class MapComponent implements OnInit {
       'visible',
       this.showRainViewerRain || this.showRainViewerRainForecast
     );
-  }
-
-  private createOrHideRainViewerClouds(showRainViewerClouds: boolean) {
-    this.showRainViewerClouds = showRainViewerClouds;
-
-    if (this.showRainViewerClouds) {
-      this.createRainViewerCloudsLayer();
-
-      if (this.refreshIntervalIdRainviewer == undefined) {
-        this.initUpdateRainViewerData();
-      }
-
-      // initial data request
-      this.makeRequestRainviewerApi();
-    } else {
-      this.removeRainViewerCloudsLayer();
-    }
-
-    // Stoppe requests nach rainviewer, wenn weder rain noch clouds angezeigt werden sollen
-    if (!this.showRainViewerRain && !this.showRainViewerClouds) {
-      this.stopRequestsToRainviewer();
-    }
-
-    this.rainviewerCloudsLayer?.set('visible', this.showRainViewerClouds);
-  }
-
-  private removeRainViewerCloudsLayer() {
-    this.layers?.remove(this.rainviewerCloudsLayer);
-  }
-
-  private createRainViewerCloudsLayer() {
-    if (this.layers == undefined) return;
-
-    this.rainviewerCloudsLayer = new TileLayer({
-      source: new XYZ({
-        url: '',
-      }),
-      opacity: 0.4,
-    });
-
-    this.layers.push(this.rainviewerCloudsLayer);
   }
 
   private initUpdateRainViewerData() {
@@ -3312,8 +3257,6 @@ export class MapComponent implements OnInit {
     let pastRadar: Array<any> = rainviewerUrlData.radar.past;
     // rain (forecast)
     let nowcastRadar: Array<any> = rainviewerUrlData.radar.nowcast;
-    // clouds
-    let infraredSatellite: Array<any> = rainviewerUrlData.satellite.infrared;
 
     // reset array
     this.forecastRainPathAndTime = [];
@@ -3345,25 +3288,10 @@ export class MapComponent implements OnInit {
         this.updateRainViewerRainForecastLayerUrl();
       }
     }
-
-    if (infraredSatellite) {
-      // clouds
-      let lastIndex = infraredSatellite.length - 1;
-      let newestTimestampCloudsUrl = infraredSatellite[lastIndex].path;
-
-      const updatedUrlClouds = this.buildRainViewerUrlClouds(
-        newestTimestampCloudsUrl
-      );
-      this.rainviewerCloudsLayer.getSource()?.setUrl(updatedUrlClouds);
-    }
   }
 
   private buildRainViewerUrlRain(pathFromApi: string) {
     return this.buildRainViewerUrl(pathFromApi, 512, 4, 1, 1);
-  }
-
-  private buildRainViewerUrlClouds(pathFromApi: string) {
-    return this.buildRainViewerUrl(pathFromApi, 512, 0, 0, 0);
   }
 
   private buildRainViewerUrl(

@@ -18,10 +18,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.time.format.DateTimeFormatter.ofLocalizedTime;
 
 @Slf4j
 @EnableScheduling
@@ -124,21 +127,58 @@ public class LocalFeederService {
     // Wenn Flugzeug in der letzten Iteration vorhanden war, lösche Feeder-Liste und Source-Liste,
     // damit nach der Iteration nur die Feeder und die Sources in der Liste stehen,
     // welche das Flugzeug geupdated haben (nur der erste Feeder pro Iteration soll die Listen löschen)
+
+    // Wenn der Feeder eine ältere Position als die letzte gespeicherte Position sendet,
+    // soll das Flugzeug von diesem Feeder ignoriert werden.
+    // Dazu müssen wir das Alter der Positionen als Timestamp berechnen und vergleichen.
+    boolean ignoreACNew = false;
+    long LastSeenPosTimestampNew = 0;
+    long LastSeenPosTimestampInDb = 0;
+    int LastSeenPosTempNew = 0;
+    int LastSeenPosTempInDb = 0;
+
+    // Null-Werte für LastSeenPos werden als 99 übersetzt,
+    // damit der LastPos-Timestamp deutlich älter als 60 Sekunden wird
+    if (aircraftNew.getLastSeenPos() != null) {
+      LastSeenPosTempNew = aircraftNew.getLastSeenPos();
+    } else {
+        LastSeenPosTempNew = 99;
+      }
+    LastSeenPosTimestampNew = System.currentTimeMillis() - (LastSeenPosTempNew * 1000L);
+
+    if (aircraftInDb.getLastSeenPos() != null) {
+      LastSeenPosTempInDb = aircraftInDb.getLastSeenPos();
+    } else {
+        LastSeenPosTempInDb = 99;
+      }
+    LastSeenPosTimestampInDb = aircraftInDb.getLastUpdate() - (LastSeenPosTempInDb * 1000L);
+
     if (previousIterationSet.contains(aircraftNew.getHex())) {
       previousIterationSet.remove(aircraftNew.getHex());
       aircraftInDb.clearFeederList();
       aircraftInDb.clearSourceList();
     }
 
-    // Update Werte des Flugzeugs mit Werten von aircraftNew
-    aircraftService.updateValuesOfAircraft(aircraftInDb, aircraftNew, feeder.getName(), true);
+// Wenn LastPosTimestamp in DB jünger ist, ignorieren wir die neuen Feeder-Daten,
+// aber wir tolerieren Abweichungen von weniger als 1 Sekunde
+// (die halbe Refresh-Rate aus INTERVAL_UPDATE_LOCAL_FEEDER)
+    if (LastSeenPosTimestampInDb > LastSeenPosTimestampNew) {
+      if (LastSeenPosTimestampInDb - LastSeenPosTimestampNew > 999) {
+        ignoreACNew = true;
+      }
+    }
 
-    try {
-      // Schreibe Flugzeug in aircraft-Tabelle
-      aircraftRepository.save(aircraftInDb);
-    } catch (Exception e) {
-      log.error("Server - DB error when writing aircraftInDb for hex " + aircraftInDb.getHex()
-          + ": Exception = " + e);
+    if (!ignoreACNew) {
+      // Update Werte des Flugzeugs mit Werten von aircraftNew
+      aircraftService.updateValuesOfAircraft(aircraftInDb, aircraftNew, feeder.getName(), true);
+
+      try {
+        // Schreibe Flugzeug in aircraft-Tabelle
+        aircraftRepository.save(aircraftInDb);
+      } catch (Exception e) {
+        log.error("Server - DB error when writing aircraftInDb for hex " + aircraftInDb.getHex()
+                + ": Exception = " + e);
+      }
     }
   }
 

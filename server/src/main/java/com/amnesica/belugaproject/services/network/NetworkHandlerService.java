@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class NetworkHandlerService {
 
   private static final int DEFAULT_TIMEOUT_MS = 30000;
-  private static final String USER_AGENT = "The Beluga Project";
+  private static final String USER_AGENT = "The Beluga Project, https://github.com/amnesica/BelugaProject";
   private static final String NONE_URL = "none";
 
   private final OkHttpClient client = new OkHttpClient.Builder()

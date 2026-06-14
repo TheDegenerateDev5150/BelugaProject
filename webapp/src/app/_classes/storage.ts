@@ -38,10 +38,6 @@ export class Storage {
       this.getPropertyFromLocalStorage('rainViewerRadar', false)
     );
     this.savePropertyInLocalStorage(
-      'rainViewerClouds',
-      this.getPropertyFromLocalStorage('rainViewerClouds', false)
-    );
-    this.savePropertyInLocalStorage(
       'rainViewerForecast',
       this.getPropertyFromLocalStorage('rainViewerForecast', false)
     );

@@ -634,11 +634,20 @@ export class Aircraft {
 
       // Beziehe Shape des Markers aus shapesMap mithilfe des shape-Bezeichners
       let shapesMapData = Globals.shapesMap[this.shapeDesignator];
-      this.shapeData = shapesMapData[0];
 
-      // Informationen für PNG für WebGL
-      this.pngId = shapesMapData[1];
-      this.pngScale = shapesMapData[2];
+      if (shapesMapData) {
+        this.shapeData = shapesMapData[0];
+
+        // Informationen für PNG für WebGL
+        this.pngId = shapesMapData[1];
+        this.pngScale = shapesMapData[2];
+
+      } else {
+        console.log("Fatal Error: shapeDesignator <<" + this.shapeDesignator + ">> does not exist in database table shape_data (column <<designator>>)!");
+        console.log("Rquested type is <<" + this.type + ">>, requested category is <<" + this.category + ")");
+        console.log("Check shapeDesignator <<" + this.shapeDesignator + ">> in database tables map_type_to_shape_date (for type <<" + this.type + ">> and/or map_cat_to_shape_data (for category <<" + this.category + ">>)");
+      }
+      
     }
   }
 

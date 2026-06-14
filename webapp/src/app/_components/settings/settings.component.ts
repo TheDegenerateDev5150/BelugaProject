@@ -108,9 +108,6 @@ export class SettingsComponent implements OnInit {
   // Boolean, ob Rainviewer (Rain) Daten angezeigt werden sollen
   rainViewerRain: boolean = false;
 
-  // Boolean, ob Rainviewer (Cloud) Daten angezeigt werden sollen
-  rainViewerClouds: boolean = false;
-
   // Boolean, ob Rainviewer Forecast (Rain) Daten angezeigt werden sollen
   rainViewerRainForecast: boolean = false;
 
@@ -206,10 +203,6 @@ export class SettingsComponent implements OnInit {
 
     this.toggleRainViewerRain(
       Storage.getPropertyFromLocalStorage('rainViewerRadar', false)
-    );
-
-    this.toggleRainViewerClouds(
-      Storage.getPropertyFromLocalStorage('rainViewerClouds', false)
     );
 
     this.toggleRainViewerRainForecast(
@@ -607,22 +600,6 @@ export class SettingsComponent implements OnInit {
 
     // Kontaktiere Map-Component und übergebe Rainviewer (Rain) Boolean
     this.settingsService.toggleRainViewerRain(this.rainViewerRain);
-  }
-
-  /**
-   * Toggle Rainviewer (Clouds)
-   * @param checked: boolean
-   */
-  toggleRainViewerClouds(checked: boolean) {
-    this.rainViewerClouds = checked;
-
-    Storage.savePropertyInLocalStorage(
-      'rainViewerClouds',
-      this.rainViewerClouds
-    );
-
-    // Kontaktiere Map-Component und übergebe Rainviewer (Clouds) Boolean
-    this.settingsService.toggleRainViewerClouds(this.rainViewerClouds);
   }
 
   /**

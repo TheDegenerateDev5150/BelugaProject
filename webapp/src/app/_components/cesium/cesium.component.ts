@@ -1397,9 +1397,10 @@ export class CesiumComponent implements OnInit {
   showClickedBehaviourOnButton(buttonId: string, isClicked: boolean) {
     const colorClicked = '#ffab40';
     const colorNotClicked = '#000';
-    document.getElementById(buttonId)!.style.background = isClicked
-      ? colorClicked
-      : colorNotClicked;
+    if(document.getElementById(buttonId))
+      document.getElementById(buttonId)!.style.background = isClicked
+        ? colorClicked
+        : colorNotClicked;
   }
 
   addEarthAtNightLayerToLayers() {

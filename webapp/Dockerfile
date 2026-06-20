@@ -2,8 +2,7 @@ FROM node:26-alpine AS builder
 WORKDIR webapp
 COPY . .
 RUN cd webapp && npm install
-RUN cd webapp && npm install -g npm@10.8.2 
-RUN cd webapp && ./node_modules/@angular/cli/bin/ng build --configuration production
+RUN cd webapp && node ./node_modules/@angular/cli/bin/ng build --configuration production
 
 FROM nginx:stable-alpine
 COPY --from=builder /webapp/webapp/dist/webapp/ /usr/share/nginx/html/

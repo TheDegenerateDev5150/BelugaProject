@@ -1323,11 +1323,11 @@ export class CesiumComponent implements OnInit {
     if (!this.viewer || !this.scene) return;
     const sunLight = new Cesium.SunLight();
     this.scene.light = sunLight;
-    this.scene.sun.glowFactor = 1.0;
+    this.scene.sun!.glowFactor = 1.0;
     this.scene.sunBloom = true;
-    this.scene.sun.show = true;
-    this.scene.skyBox.show = true;
-    this.scene.moon.show = true;
+    this.scene.sun!.show = true;
+    this.scene.skyBox!.show = true;
+    this.scene.moon!.show = true;
     this.scene.postProcessStages.add(
       Cesium.PostProcessStageLibrary.createLensFlareStage()
     );

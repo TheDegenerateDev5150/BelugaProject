@@ -1110,6 +1110,7 @@ export class Aircraft {
     if (this.trackLinePointsAre180Crosspoints()) return;
 
     let featureLine = new Feature({
+      // @ts-ignore
       geometry: new LineString([
         this.trackLinePoints[this.trackLinePoints.length - 1].coordinate,
         this.trackLinePoints[this.trackLinePoints.length - 2].coordinate,

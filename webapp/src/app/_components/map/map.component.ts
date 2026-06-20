@@ -3615,6 +3615,7 @@ export class MapComponent implements OnInit {
 
     const point = new Point(olProj.fromLonLat([ship.longitude, ship.latitude]));
     let feature: any = new Feature({
+      // @ts-ignore
       geometry: point,
     });
 
@@ -3636,6 +3637,7 @@ export class MapComponent implements OnInit {
       ship.dimension != null
     ) {
       var shapeFeature: any = new Feature({
+        // @ts-ignore
         geometry: Ship.createShipOutlineGeometry(ship),
       });
       shapeFeature.ship = ship;

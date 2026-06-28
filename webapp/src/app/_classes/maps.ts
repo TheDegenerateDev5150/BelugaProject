@@ -8,6 +8,13 @@ export class Maps {
         '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>  contributors.',
     },
     {
+      name: 'OSM (DE)',
+      url: 'https://{a-d}.tile.openstreetmap.de/{z}/{x}/{y}.png',
+      isSelected: false,
+      attribution:
+        '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>  contributors.',
+    },
+    {
       name: 'CartoDB Voyager',
       url: 'https://{a-d}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
       isSelected: false,

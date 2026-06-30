@@ -43,7 +43,7 @@ export class ToolbarComponent implements OnInit {
     private toolbarService: ToolbarService,
     public settingsService: SettingsService,
     public breakpointObserver: BreakpointObserver,
-    private serverService: ServerService
+    private serverService: ServerService,
   ) {}
 
   ngOnInit(): void {
@@ -134,7 +134,7 @@ export class ToolbarComponent implements OnInit {
       .getAddressFromServer(inputLocation)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((coordinatesJson) =>
-        this.processCoordinatesFromServer(coordinatesJson)
+        this.processCoordinatesFromServer(coordinatesJson),
       );
   }
 

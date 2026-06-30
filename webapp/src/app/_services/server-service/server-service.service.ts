@@ -34,7 +34,7 @@ export class ServerService {
     fetchRemote: string | null,
     showIss: boolean,
     markedHex: string | null,
-    showOnlyMilitary: boolean
+    showOnlyMilitary: boolean,
   ): Observable<Aircraft[]> {
     // Initialiere Params-Objekt
     let params = new HttpParams();
@@ -69,7 +69,7 @@ export class ServerService {
     lamin: number,
     lomax: number,
     lamax: number,
-    zoomLevel: number
+    zoomLevel: number,
   ): Observable<any> {
     // Initialiere Params-Objekt
     let params = new HttpParams();
@@ -95,7 +95,7 @@ export class ServerService {
   getAllAircraftData(
     hex: string,
     registration: string,
-    isFromRemote: boolean
+    isFromRemote: boolean,
   ): Observable<any> {
     // Initialiere Params-Objekt
     let params = new HttpParams();
@@ -121,7 +121,7 @@ export class ServerService {
   getTrail(
     hex: string,
     selectedFeeder: any,
-    fetchRemote: string | null
+    fetchRemote: string | null,
   ): Observable<any> {
     // Initialiere Params-Objekt
     let params = new HttpParams();
@@ -171,7 +171,7 @@ export class ServerService {
     lamin: number,
     lomax: number,
     lamax: number,
-    enable: boolean
+    enable: boolean,
   ): Observable<any> {
     // Initialiere Params-Objekt
     let params = new HttpParams();

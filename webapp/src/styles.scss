@@ -109,11 +109,13 @@ mat-slide-toggle {
   line-height: 16px;
 }
 
-.mdc-text-field--filled { // when appearance="fill"
+.mdc-text-field--filled {
+  // when appearance="fill"
   border-top-left-radius: 15px !important;
   border-top-right-radius: 15px !important;
 }
 
-.mdc-text-field--outlined { // when appearance="outline"
+.mdc-text-field--outlined {
+  // when appearance="outline"
   --mdc-outlined-text-field-container-shape: 18px !important;
 }

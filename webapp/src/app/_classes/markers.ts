@@ -13,7 +13,7 @@ export class Markers {
    */
   static getTypeDesignatorAndScale(
     category: string,
-    typeDesignator: string
+    typeDesignator: string,
   ): [string, number] {
     if (typeDesignator in Globals.typesMap) {
       let shape = Globals.typesMap[typeDesignator][0];
@@ -43,7 +43,7 @@ export class Markers {
     shape: any,
     fillColor: any,
     strokeColor: any,
-    strokeWidth: any
+    strokeWidth: any,
   ) {
     strokeWidth *= shape.strokeScale ? shape.strokeScale : 1;
 
@@ -124,7 +124,7 @@ export class Markers {
     asHex: boolean,
     isMarked: boolean,
     isCesium: boolean,
-    isReentered: boolean
+    isReentered: boolean,
   ): any {
     let rgb: number[];
 

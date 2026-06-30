@@ -507,7 +507,7 @@
             "
           >
             <!-- App-BuildTime -->
-            BuildTime {{ appBuildTime * 1000 | date : "yyyy-MM-dd HH:mm:ss" }}
+            BuildTime {{ appBuildTime * 1000 | date: "yyyy-MM-dd HH:mm:ss" }}
           </p>
 
           <p
@@ -536,7 +536,7 @@
             <!-- Hinweis: Nur im production-Mode wird der Link richtig aufgerufen -->
             <a
               href="/getLogs"
-              onclick="javascript:event.target.port=8080"
+              onclick="javascript: event.target.port = 8080;"
               target="_blank"
               style="color: white; text-decoration: none"
             >

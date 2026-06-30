@@ -71,7 +71,7 @@ export class Trail {
       coordinate: olProj.transform(
         [longitude, latitude],
         'EPSG:4326',
-        'EPSG:3857'
+        'EPSG:3857',
       ),
     });
   }
@@ -104,7 +104,7 @@ export class Trail {
         true,
         false,
         false,
-        false
+        false,
       );
 
       // Erstelle Style des Trailabschnittes

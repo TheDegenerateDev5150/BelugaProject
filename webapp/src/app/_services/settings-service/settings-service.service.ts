@@ -26,6 +26,7 @@ export class SettingsService {
   private openskyCredentialsExistSource = new Subject<boolean>();
   aircraftTrailAltitudeData$ = new BehaviorSubject({});
   private rainViewerRainSource = new Subject<boolean>();
+  private dwdRainSource = new Subject<boolean>();
   private rainViewerRainForecastSource = new Subject<boolean>();
   private toggleShowAircraftPositionsSource = new Subject<boolean>();
   private selectMapStyleSource = new Subject<string>();
@@ -73,6 +74,7 @@ export class SettingsService {
   openskyCredentialsExistSource$ =
     this.openskyCredentialsExistSource.asObservable();
   rainViewerRain$ = this.rainViewerRainSource.asObservable();
+  dwdRain$ = this.dwdRainSource.asObservable();
   rainViewerRainForecast$ = this.rainViewerRainForecastSource.asObservable();
   toggleShowAircraftPositions$ =
     this.toggleShowAircraftPositionsSource.asObservable();
@@ -201,6 +203,11 @@ export class SettingsService {
   toggleRainViewerRain(rainViewerRain: boolean) {
     this.rainViewerRainSource.next(rainViewerRain);
     return this.rainViewerRainSource;
+  }
+
+  toggleDwdRain(dwdRain: boolean) {
+    this.dwdRainSource.next(dwdRain);
+    return this.dwdRainSource;
   }
 
   toggleRainViewerRainForecast(rainViewerRainForecast: boolean) {

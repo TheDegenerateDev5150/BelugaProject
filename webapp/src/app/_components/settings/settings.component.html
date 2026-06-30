@@ -388,6 +388,16 @@
           >
         </div>
 
+        <!-- DWD (Rain) -->
+        <div>
+          <mat-slide-toggle
+            [checked]="dwdRain"
+            (click)="$event.stopPropagation()"
+            (change)="toggleDwdRain($event.checked)"
+            >Radar (DWD)</mat-slide-toggle
+          >
+        </div>
+
         <!-- Rainviewer (Rain forecast) -->
         <div>
           <mat-slide-toggle

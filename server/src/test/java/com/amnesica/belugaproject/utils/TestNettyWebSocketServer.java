@@ -2,7 +2,7 @@ package com.amnesica.belugaproject.utils;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
@@ -28,11 +28,10 @@ public class TestNettyWebSocketServer {
   }
 
   public void start() throws InterruptedException {
-    EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-    EventLoopGroup workerGroup = new NioEventLoopGroup();
+    EventLoopGroup group = new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
     ServerBootstrap b = new ServerBootstrap();
 
-    b.group(bossGroup, workerGroup)
+    b.group(group)
         .channel(NioServerSocketChannel.class)
         .childHandler(new ChannelInitializer<SocketChannel>() {
           @Override
@@ -50,7 +49,7 @@ public class TestNettyWebSocketServer {
 
               @Override
               public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-                if (evt == WebSocketServerProtocolHandler.ServerHandshakeStateEvent.HANDSHAKE_COMPLETE) {
+                if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
                   clientChannelRef.set(ctx.channel());
                   clientConnectedLatch.countDown(); // client connected
                 }

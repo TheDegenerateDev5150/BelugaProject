@@ -3,13 +3,14 @@ package com.amnesica.belugaproject.services.integrationtests;
 import com.amnesica.belugaproject.entities.ships.Ship;
 import com.amnesica.belugaproject.services.ships.AisStreamWebsocketClient;
 import com.amnesica.belugaproject.services.ships.okhttp.OkHttpWebSocketClientFactory;
-import com.amnesica.belugaproject.utils.TestNettyWebSocketServer;
+import com.amnesica.belugaproject.utils.JdkWebSocketServer;
 import com.amnesica.belugaproject.utils.TestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 class AisStreamWebsocketClientIntegrationTest {
 
-  private TestNettyWebSocketServer server;
+  private JdkWebSocketServer server;
 
   private final int PORT = 1070;
   private final String PATH = "/ais-stream";
@@ -31,10 +32,10 @@ class AisStreamWebsocketClientIntegrationTest {
   private ConcurrentHashMap<Integer, Ship> initialShips;
 
   @BeforeEach
-  void setUp() throws InterruptedException {
+  void setUp() throws InterruptedException, IOException {
     System.out.println("################# Setting up test #################");
 
-    server = new TestNettyWebSocketServer(PORT, PATH);
+    server = new JdkWebSocketServer(PORT, PATH);
     server.start();
     System.out.println("WebSocket server started at ws://localhost:1070/ais-stream");
 
@@ -68,14 +69,23 @@ class AisStreamWebsocketClientIntegrationTest {
   void tearDown() throws InterruptedException {
     System.out.println("----------------- Completed test case -----------------");
     System.out.println("----------------- Tearing down test -----------------");
+
     if (aisStreamWebsocketClient != null) {
       System.out.println("Stopping AisStreamWebsocketClient...");
       aisStreamWebsocketClient.stopClient();
+      // Wait for client to properly close
+      waitSeconds(1);
     }
+
     if (server != null) {
       System.out.println("Stopping WebSocket server...");
-      server.stop();
+      try {
+        server.stop();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
+
     System.out.println("----------------- Tear down completed -----------------");
   }
 
@@ -253,7 +263,7 @@ class AisStreamWebsocketClientIntegrationTest {
         }
         server.sendToWebSocket(message);
         System.out.println("Sent message to WebSocket client: " + message);
-      } catch (InterruptedException e) {
+      } catch (InterruptedException | IOException e) {
         Thread.currentThread().interrupt();
         fail("Interrupted while waiting for server connection");
       }

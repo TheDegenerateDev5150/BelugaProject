@@ -25,6 +25,8 @@ public class AisStreamWebsocketClient {
   @Getter
   boolean isConnected = false;
 
+  private volatile boolean isClosing = false;
+
   @Getter
   private final ConcurrentHashMap<Integer, Ship> aisShips = new ConcurrentHashMap<>();
 
@@ -55,6 +57,7 @@ public class AisStreamWebsocketClient {
   }
 
   public void stopClient() {
+    isClosing = true;
     webSocketClient.close("Client closing connection");
   }
 
@@ -104,8 +107,10 @@ public class AisStreamWebsocketClient {
 
     @Override
     public void onError(Throwable t) {
+      if (!isClosing) { // Only log if not intentionally closing
+        log.error("WebSocket encountered an error: {}", t != null ? t.getMessage() : "null");
+      }
       isConnected = false;
-      log.error("WebSocket encountered an error: {}", t.getMessage());
     }
 
     private void handleIncomingMessage(String jsonMessage) {

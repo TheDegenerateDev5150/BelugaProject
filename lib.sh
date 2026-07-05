@@ -299,6 +299,7 @@ _download_aircraft_database() {
   echo "-> Download $aircraft_database_filename from Opensky-Network. Done."
 
   echo "Copy $aircraft_database_filename to $path_db_content ..."
+  docker exec -ti $container_name_db bash -c "[ -d $path_db_content ] || mkdir -p $path_db_content"
   docker exec -ti $container_name_db bash -c "cp $aircraft_database_filename $path_db_content"
   echo "-> Copy $aircraft_database_filename to $path_db_content. Done."
 }
@@ -309,6 +310,7 @@ _download_airport_database() {
   echo "-> Download $airport_database_filename from OurAirports. Done."
 
   echo "Copy $airport_database_filename to $path_db_content ..."
+  docker exec -ti $container_name_db bash -c "[ -d $path_db_content ] || mkdir -p $path_db_content"
   docker exec -ti $container_name_db bash -c "cp $airport_database_filename $path_db_content"
   echo "-> Copy $airport_database_filename to $path_db_content. Done."
 }
@@ -323,6 +325,7 @@ _download_mictronics_aircraft_database() {
   _convert_mictronics_database_to_csv
 
   echo "Copy $aircraft_mictronics_database_aircrafts_csv, $aircraft_mictronics_database_operators_csv, $aircraft_mictronics_database_types_csv to $path_db_content ..."
+  docker exec -ti $container_name_db bash -c "[ -d $path_db_content ] || mkdir -p $path_db_content"
   docker exec -ti $container_name_db bash -c "cp $aircraft_mictronics_database_aircrafts_csv $path_db_content"
   docker exec -ti $container_name_db bash -c "cp $aircraft_mictronics_database_operators_csv $path_db_content"
   docker exec -ti $container_name_db bash -c "cp $aircraft_mictronics_database_types_csv $path_db_content"
@@ -339,6 +342,7 @@ _download_flightroute_database() {
   _convert_flightroute_database_to_csv
 
   echo "Copy $flightroute_database_filename to $path_db_content ..."
+  docker exec -ti $container_name_db bash -c "[ -d $path_db_content ] || mkdir -p $path_db_content"
   docker exec -ti $container_name_db bash -c "cp $flightroute_database_filename $path_db_content"
   echo "-> Copy $flightroute_database_filename to $path_db_content. Done."
 }

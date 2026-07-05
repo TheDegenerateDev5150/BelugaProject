@@ -27,6 +27,7 @@ public class NetworkHandlerServiceTest {
   private static final String BASE_URL = "http://localhost:" + PORT;
   private static MockServer mockServer;
   private static MockServerClient mockServerClient;
+  private static final String USER_AGENT = "The Beluga Project, https://github.com/amnesica/BelugaProject";
 
   @InjectMocks
   private NetworkHandlerService networkHandlerService;
@@ -51,14 +52,14 @@ public class NetworkHandlerServiceTest {
   public void makeServiceCallSuccessTest() {
     // Setup
     String jsonResponse = "{\"message\": \"success\", \"data\": [1, 2, 3]}";
-    mockServerClient.when(request().withMethod("GET").withPath("/api/data").withHeader("User-Agent", "The Beluga Project")).respond(response().withStatusCode(200).withContentType(MediaType.APPLICATION_JSON).withBody(jsonResponse));
+    mockServerClient.when(request().withMethod("GET").withPath("/api/data").withHeader("User-Agent", USER_AGENT)).respond(response().withStatusCode(200).withContentType(MediaType.APPLICATION_JSON).withBody(jsonResponse));
 
     // Execute
     String result = networkHandlerService.makeServiceCall(BASE_URL + "/api/data");
 
     // Verify
     assertEquals(jsonResponse, result);
-    mockServerClient.verify(request().withMethod("GET").withPath("/api/data").withHeader("User-Agent", "The Beluga Project"));
+    mockServerClient.verify(request().withMethod("GET").withPath("/api/data").withHeader("User-Agent", USER_AGENT));
   }
 
   @Test
@@ -80,7 +81,7 @@ public class NetworkHandlerServiceTest {
     String username = "testUser";
     char[] password = "testPassword".toCharArray();
 
-    mockServerClient.when(request().withMethod("GET").withPath("/api/states/all").withHeader("User-Agent", "The Beluga Project").withHeader("Authorization", "Basic dGVzdFVzZXI6dGVzdFBhc3N3b3Jk") // base64 encoded testUser:testPassword
+    mockServerClient.when(request().withMethod("GET").withPath("/api/states/all").withHeader("User-Agent", USER_AGENT).withHeader("Authorization", "Basic dGVzdFVzZXI6dGVzdFBhc3N3b3Jk") // base64 encoded testUser:testPassword
     ).respond(response().withStatusCode(200).withContentType(MediaType.APPLICATION_JSON).withBody(jsonResponse));
 
     // Execute
@@ -88,7 +89,7 @@ public class NetworkHandlerServiceTest {
 
     // Verify
     assertEquals(jsonResponse, result);
-    mockServerClient.verify(request().withMethod("GET").withPath("/api/states/all").withHeader("User-Agent", "The Beluga Project").withHeader("Authorization", "Basic dGVzdFVzZXI6dGVzdFBhc3N3b3Jk"));
+    mockServerClient.verify(request().withMethod("GET").withPath("/api/states/all").withHeader("User-Agent", USER_AGENT).withHeader("Authorization", "Basic dGVzdFVzZXI6dGVzdFBhc3N3b3Jk"));
   }
 
   @Test
@@ -110,14 +111,14 @@ public class NetworkHandlerServiceTest {
   public void makeServiceCallLocalFeederSuccessTest() {
     // Setup
     String jsonResponse = "{\n" + "  \"now\": 1730026214.001,\n" + "  \"messages\": 194539149,\n" + "  \"aircraft\": [\n" + "    {\n" + "      \"hex\": \"3d4920\",\n" + "      \"flight\": \"DEZYE   \",\n" + "      \"alt_baro\": 1300,\n" + "      \"gs\": 148.7,\n" + "      \"track\": 169.1,\n" + "      \"lat\": 53.546898,\n" + "      \"lon\": 10.004021\n" + "    }\n" + "  ]\n" + "}";
-    mockServerClient.when(request().withMethod("GET").withPath("/api/aircraft").withHeader("User-Agent", "The Beluga Project")).respond(response().withStatusCode(200).withContentType(MediaType.APPLICATION_JSON).withBody(jsonResponse));
+    mockServerClient.when(request().withMethod("GET").withPath("/api/aircraft").withHeader("User-Agent", USER_AGENT)).respond(response().withStatusCode(200).withContentType(MediaType.APPLICATION_JSON).withBody(jsonResponse));
 
     // Execute
     String result = networkHandlerService.makeServiceCallLocalFeeder(BASE_URL + "/api/aircraft");
 
     // Verify
     assertEquals(jsonResponse, result);
-    mockServerClient.verify(request().withMethod("GET").withPath("/api/aircraft").withHeader("User-Agent", "The Beluga Project"));
+    mockServerClient.verify(request().withMethod("GET").withPath("/api/aircraft").withHeader("User-Agent", USER_AGENT));
   }
 
   @Test

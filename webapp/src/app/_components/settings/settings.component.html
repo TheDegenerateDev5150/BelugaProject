@@ -388,6 +388,16 @@
           >
         </div>
 
+        <!-- DWD (Rain) -->
+        <div>
+          <mat-slide-toggle
+            [checked]="dwdRain"
+            (click)="$event.stopPropagation()"
+            (change)="toggleDwdRain($event.checked)"
+            >Radar (DWD)</mat-slide-toggle
+          >
+        </div>
+
         <!-- Rainviewer (Rain forecast) -->
         <div>
           <mat-slide-toggle
@@ -497,7 +507,7 @@
             "
           >
             <!-- App-BuildTime -->
-            BuildTime {{ appBuildTime * 1000 | date : "yyyy-MM-dd HH:mm:ss" }}
+            BuildTime {{ appBuildTime * 1000 | date: "yyyy-MM-dd HH:mm:ss" }}
           </p>
 
           <p
@@ -526,7 +536,7 @@
             <!-- Hinweis: Nur im production-Mode wird der Link richtig aufgerufen -->
             <a
               href="/getLogs"
-              onclick="javascript:event.target.port=8080"
+              onclick="javascript: event.target.port = 8080;"
               target="_blank"
               style="color: white; text-decoration: none"
             >

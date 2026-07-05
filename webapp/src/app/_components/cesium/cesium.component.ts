@@ -129,7 +129,7 @@ export class CesiumComponent implements OnInit {
   constructor(
     public breakpointObserver: BreakpointObserver,
     private cesumService: CesiumService,
-    private el: ElementRef
+    private el: ElementRef,
   ) {
     this.elementRef = el;
   }
@@ -244,7 +244,7 @@ export class CesiumComponent implements OnInit {
     if (!this.viewer || !index) return;
     this.viewer.baseLayerPicker.viewModel.imageryProviderViewModels.splice(
       index,
-      1
+      1,
     );
   }
 
@@ -252,11 +252,11 @@ export class CesiumComponent implements OnInit {
     if (!this.viewer) return;
 
     this.viewer.screenSpaceEventHandler.removeInputAction(
-      Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK
+      Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK,
     );
 
     this.viewer.screenSpaceEventHandler.removeInputAction(
-      Cesium.ScreenSpaceEventType.LEFT_CLICK
+      Cesium.ScreenSpaceEventType.LEFT_CLICK,
     );
   }
 
@@ -271,8 +271,7 @@ export class CesiumComponent implements OnInit {
 
   enableCollisionDetection() {
     if (!this.viewer) return;
-    this.viewer.scene.screenSpaceCameraController.enableCollisionDetection =
-      true;
+    this.viewer.scene.screenSpaceCameraController.enableCollisionDetection = true;
   }
 
   removeInstructionHintAtStart() {
@@ -290,54 +289,54 @@ export class CesiumComponent implements OnInit {
     if (!this.viewer || !this.scene) return;
 
     this.toggleHdrOnMap(
-      Storage.getPropertyFromLocalStorage('showHdr3d', false)
+      Storage.getPropertyFromLocalStorage('showHdr3d', false),
     );
     this.toggleShadowsOnMap(
-      Storage.getPropertyFromLocalStorage('showShadows3d', false)
+      Storage.getPropertyFromLocalStorage('showShadows3d', false),
     );
     this.toggleTerrainShadowsOnMap(
-      Storage.getPropertyFromLocalStorage('showTerrainShadows3d', false)
+      Storage.getPropertyFromLocalStorage('showTerrainShadows3d', false),
     );
     this.toggleLightingOnMap(
-      Storage.getPropertyFromLocalStorage('showLighting3d', false)
+      Storage.getPropertyFromLocalStorage('showLighting3d', false),
     );
     this.toggleMsaaOnMap(
-      Storage.getPropertyFromLocalStorage('showMsaa3d', false)
+      Storage.getPropertyFromLocalStorage('showMsaa3d', false),
     );
     this.toggleFxaaOnMap(
-      Storage.getPropertyFromLocalStorage('showFxaa3d', false)
+      Storage.getPropertyFromLocalStorage('showFxaa3d', false),
     );
     this.toggleAmbientOcclusionOnMap(
-      Storage.getPropertyFromLocalStorage('showAmbientOcclusion3d', false)
+      Storage.getPropertyFromLocalStorage('showAmbientOcclusion3d', false),
     );
     this.sliderMsaa3dValue = Storage.getPropertyFromLocalStorage(
       'sliderMsaa3d',
-      0
+      0,
     );
     this.scene.msaaSamples = this.sliderMsaa3dValue;
     this.toggleAthmosphereLightOnMap(
-      Storage.getPropertyFromLocalStorage('showAthmosphereLight3d', false)
+      Storage.getPropertyFromLocalStorage('showAthmosphereLight3d', false),
     );
     this.toggleFogOnMap(
-      Storage.getPropertyFromLocalStorage('showFog3d', false)
+      Storage.getPropertyFromLocalStorage('showFog3d', false),
     );
     this.toggleDebugInfoOnMap(
-      Storage.getPropertyFromLocalStorage('showDebugInfo3d', false)
+      Storage.getPropertyFromLocalStorage('showDebugInfo3d', false),
     );
     this.toggleDefaultResolutionOnMap(
-      Storage.getPropertyFromLocalStorage('showDefaultResolution3d', true)
+      Storage.getPropertyFromLocalStorage('showDefaultResolution3d', true),
     );
     this.toggleOsmBuildingsOnMap(
-      Storage.getPropertyFromLocalStorage('showOsmBuildings3d', false)
+      Storage.getPropertyFromLocalStorage('showOsmBuildings3d', false),
     );
     this.toggleGooglePhotogrammatryOnMap(
-      Storage.getPropertyFromLocalStorage('showGooglePhotorealistic3d', false)
+      Storage.getPropertyFromLocalStorage('showGooglePhotorealistic3d', false),
     );
     this.toggleCloudsOnMap(
-      Storage.getPropertyFromLocalStorage('showClouds3d', false)
+      Storage.getPropertyFromLocalStorage('showClouds3d', false),
     );
     this.toggleDayNightLayerOnMap(
-      Storage.getPropertyFromLocalStorage('showDayNightLayer3d', false)
+      Storage.getPropertyFromLocalStorage('showDayNightLayer3d', false),
     );
   }
 
@@ -368,7 +367,7 @@ export class CesiumComponent implements OnInit {
       Globals.SitePosition[0] - 2,
       Globals.SitePosition[1] - 2,
       Globals.SitePosition[0] + 2,
-      Globals.SitePosition[1] + 2
+      Globals.SitePosition[1] + 2,
     );
 
     Cesium.Camera.DEFAULT_VIEW_RECTANGLE = extent;
@@ -382,14 +381,14 @@ export class CesiumComponent implements OnInit {
     if (altitude == 0 || altitude < 0) {
       altitude = this.getAltitudeWhenOnGround(
         aircraft.longitude,
-        aircraft.latitude
+        aircraft.latitude,
       );
     }
 
     const startPosition = Cesium.Cartesian3.fromDegrees(
       aircraft.position[0],
       aircraft.position[1],
-      altitude * 0.3048 * 20
+      altitude * 0.3048 * 20,
     );
 
     // Resette Camera
@@ -437,7 +436,7 @@ export class CesiumComponent implements OnInit {
 
   getOrCreateEntityGroup(
     entityGroupModelName: string,
-    isMarked: boolean
+    isMarked: boolean,
   ): Cesium.CustomDataSource | undefined {
     if (!entityGroupModelName || !this.viewer) return;
 
@@ -472,14 +471,14 @@ export class CesiumComponent implements OnInit {
       // Hole Höhe von Terrain (wichtig, wenn Wert "on ground" gesendet wird und keine altitude vorliegt!)
       altitude = this.getAltitudeWhenOnGround(
         trailPoint.longitude,
-        trailPoint.latitude
+        trailPoint.latitude,
       );
     }
 
     const position = Cesium.Cartesian3.fromDegrees(
       trailPoint.longitude,
       trailPoint.latitude,
-      altitude
+      altitude,
     );
 
     if (!this.pathPositions) {
@@ -515,7 +514,7 @@ export class CesiumComponent implements OnInit {
     if (this.lastPathPositionSample) {
       this.pathPositions[this.pathPositions.length - 1].addSample(
         this.lastPathPositionSample.time,
-        this.lastPathPositionSample.position
+        this.lastPathPositionSample.position,
       );
     }
   }
@@ -561,12 +560,12 @@ export class CesiumComponent implements OnInit {
     return altitude !== undefined
       ? altitude
       : this.lastGroundHeight !== undefined
-      ? this.lastGroundHeight
-      : defaultHeightInMeters;
+        ? this.lastGroundHeight
+        : defaultHeightInMeters;
   }
 
   private getHeightFrom3dTilesetDirect(
-    cartographic: Cesium.Cartographic
+    cartographic: Cesium.Cartographic,
   ): number | undefined {
     if (
       !Cesium.defined(cartographic) ||
@@ -582,7 +581,7 @@ export class CesiumComponent implements OnInit {
 
   async loadAircraftModel(
     aircraft: Aircraft | undefined,
-    entityGroup: Cesium.CustomDataSource
+    entityGroup: Cesium.CustomDataSource,
   ) {
     if (!this.scene || !this.viewer || !aircraft) return;
 
@@ -597,7 +596,7 @@ export class CesiumComponent implements OnInit {
         new Date().getTime(),
         aircraft.track,
         aircraft.roll,
-        false
+        false,
       );
     }
 
@@ -608,7 +607,7 @@ export class CesiumComponent implements OnInit {
       lastTrail3d.longitude,
       lastTrail3d.latitude,
       lastTrail3d.altitude,
-      aircraft.onGround
+      aircraft.onGround,
     );
 
     if (lastTrail3d.track == 0) {
@@ -624,11 +623,11 @@ export class CesiumComponent implements OnInit {
     const hpr = new Cesium.HeadingPitchRoll(
       lastHeadingRad,
       lastPitchRad,
-      lastRollRad
+      lastRollRad,
     );
     const lastOrientation = Cesium.Transforms.headingPitchRollQuaternion(
       lastPosition,
-      hpr
+      hpr,
     );
 
     // Wichtig für Follow-Plane-Feature
@@ -645,14 +644,14 @@ export class CesiumComponent implements OnInit {
         lastTrail3d,
         lastPosition,
         entityGroup,
-        aircraft
+        aircraft,
       );
     } else {
       this.updatePlaneModelMovement(
         lastTrail3d,
         lastPosition,
         entityGroup,
-        aircraft.hex
+        aircraft.hex,
       );
     }
 
@@ -685,12 +684,12 @@ export class CesiumComponent implements OnInit {
     lastTrack3d: any,
     lastPosition: Cesium.Cartesian3,
     entityGroup: Cesium.CustomDataSource,
-    hex: string
+    hex: string,
   ) {
     if (!this.EntityPositions[hex] || !this.viewer) return;
 
     const sampleTime = Cesium.JulianDate.fromDate(
-      new Date(lastTrack3d.timestamp)
+      new Date(lastTrack3d.timestamp),
     );
 
     // Füge lastPosition zum 3d-Movement hinzu (nach erstem Aufruf)
@@ -701,7 +700,7 @@ export class CesiumComponent implements OnInit {
     lastPositionCockpit.z += 6;
     this.EntityCockpitPositions[hex]!.addSample(
       sampleTime,
-      lastPositionCockpit
+      lastPositionCockpit,
     );
 
     let entity = entityGroup.entities.getById(hex + '_model');
@@ -714,12 +713,12 @@ export class CesiumComponent implements OnInit {
     lastTrack3d: any,
     lastPosition: Cesium.Cartesian3,
     entityGroup: any,
-    aircraft: Aircraft
+    aircraft: Aircraft,
   ) {
     if (!this.viewer) return;
 
     this.startTime = Cesium.JulianDate.fromDate(
-      new Date(lastTrack3d.timestamp)
+      new Date(lastTrack3d.timestamp),
     );
     // Setze Zeit in Cesium auf letzten Trail-Point
     this.viewer.clock.currentTime = this.startTime;
@@ -753,7 +752,7 @@ export class CesiumComponent implements OnInit {
     lastPositionCockpit.z += 6;
     this.EntityCockpitPositions[aircraft.hex]!.addSample(
       this.startTime,
-      lastPositionCockpit
+      lastPositionCockpit,
     );
 
     // EndTime (1 Jahr => Infinity)
@@ -795,7 +794,7 @@ export class CesiumComponent implements OnInit {
           backgroundPadding: new Cesium.Cartesian2(5, 0),
           distanceDisplayCondition: new Cesium.DistanceDisplayCondition(
             3000,
-            Infinity
+            Infinity,
           ),
         },
       });
@@ -806,7 +805,7 @@ export class CesiumComponent implements OnInit {
     longitude: any,
     latitude: any,
     altitude: any,
-    onGround: any
+    onGround: any,
   ): Cesium.Cartesian3 {
     let position: any;
     if (onGround || altitude == 0 || altitude < 0) {
@@ -818,14 +817,14 @@ export class CesiumComponent implements OnInit {
       position = Cesium.Cartesian3.fromDegrees(
         longitude,
         latitude,
-        altitude ? altitude : 0
+        altitude ? altitude : 0,
       );
     }
     return position;
   }
 
   createUriForModel(
-    type: string
+    type: string,
   ): string | Cesium.Property | Cesium.Resource | undefined {
     return Globals.urlGetModelFromServer + '?type=' + type;
   }
@@ -905,7 +904,7 @@ export class CesiumComponent implements OnInit {
     } catch (error) {
       this.openSnackBar(
         `Error loading OSM 3D Building Tiles tileset. ${error}`,
-        'OK'
+        'OK',
       );
       this.removeOsm3dBuildings();
     }
@@ -927,7 +926,7 @@ export class CesiumComponent implements OnInit {
       if (!this.google3dTileset) {
         this.google3dTileset = await Cesium.Cesium3DTileset.fromIonAssetId(
           2275207,
-          {}
+          {},
         );
         this.scene.primitives.add(this.google3dTileset);
       }
@@ -937,7 +936,7 @@ export class CesiumComponent implements OnInit {
     } catch (error) {
       this.openSnackBar(
         `Error loading Photorealistic 3D Tiles tileset. ${error}`,
-        'OK'
+        'OK',
       );
       this.removeGooglePhotorealistic3D();
     }
@@ -968,7 +967,7 @@ export class CesiumComponent implements OnInit {
 
     this.showClickedBehaviourOnButton(
       'showCockpitView3d',
-      this.displayCockpitView3d
+      this.displayCockpitView3d,
     );
 
     // Initiiere Update
@@ -989,7 +988,7 @@ export class CesiumComponent implements OnInit {
 
     this.showClickedBehaviourOnButton(
       'showCockpitModel3d',
-      this.displayCockpitModel3d
+      this.displayCockpitModel3d,
     );
   }
 
@@ -1023,7 +1022,7 @@ export class CesiumComponent implements OnInit {
     this.displayCockpitModel3d = false;
     this.showClickedBehaviourOnButton(
       'showCockpitModel3d',
-      this.displayCockpitModel3d
+      this.displayCockpitModel3d,
     );
   }
 
@@ -1031,7 +1030,7 @@ export class CesiumComponent implements OnInit {
     if (!this.viewer) return;
 
     let entity = this.entityGroupModel!.entities.getById(
-      this.aircraft!.hex + '_model'
+      this.aircraft!.hex + '_model',
     );
     if (!entity) return;
 
@@ -1045,12 +1044,12 @@ export class CesiumComponent implements OnInit {
 
     let transform = Cesium.Matrix4.fromRotationTranslation(
       Cesium.Matrix3.fromQuaternion(orientation),
-      center
+      center,
     );
 
     this.viewer.camera.lookAtTransform(
       transform,
-      new Cesium.Cartesian3(0.1, 0, 0)
+      new Cesium.Cartesian3(0.1, 0, 0),
     );
   }
 
@@ -1059,7 +1058,7 @@ export class CesiumComponent implements OnInit {
 
     let entityCockpit = this.createCockpitEntity(
       this.entityGroupModel,
-      this.aircraft
+      this.aircraft,
     );
 
     if (this.displayCockpitView3d) {
@@ -1068,7 +1067,7 @@ export class CesiumComponent implements OnInit {
       }
 
       let entityPlane = this.entityGroupModel!.entities.getById(
-        this.aircraft!.hex + '_model'
+        this.aircraft!.hex + '_model',
       );
       if (!entityPlane || !entityCockpit) return;
 
@@ -1078,7 +1077,7 @@ export class CesiumComponent implements OnInit {
       entityCockpit.show = true;
 
       this.planeEntityCenter = entityPlane.position!.getValue(
-        clock.currentTime
+        clock.currentTime,
       );
 
       // Setze Cockpit höher als Flugzeug-Center-Punkt, damit Cockpit nicht im Boden versinkt
@@ -1189,7 +1188,7 @@ export class CesiumComponent implements OnInit {
     this.leftDownInputAction = this.handler.setInputAction((movement) => {
       this.flags.looking = true;
       this.mousePosition = this.startMousePosition = Cesium.Cartesian3.clone(
-        movement.position
+        movement.position,
       );
     }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
 
@@ -1291,7 +1290,7 @@ export class CesiumComponent implements OnInit {
     this.display3dMapFullscreen = this.display3dMapFullscreen ? false : true;
     this.showClickedBehaviourOnButton(
       'show3dMapFullscreen',
-      this.display3dMapFullscreen
+      this.display3dMapFullscreen,
     );
 
     let cesiumMap = document.getElementById('cesium-map');
@@ -1323,13 +1322,13 @@ export class CesiumComponent implements OnInit {
     if (!this.viewer || !this.scene) return;
     const sunLight = new Cesium.SunLight();
     this.scene.light = sunLight;
-    this.scene.sun.glowFactor = 1.0;
+    this.scene.sun!.glowFactor = 1.0;
     this.scene.sunBloom = true;
-    this.scene.sun.show = true;
-    this.scene.skyBox.show = true;
-    this.scene.moon.show = true;
+    this.scene.sun!.show = true;
+    this.scene.skyBox!.show = true;
+    this.scene.moon!.show = true;
     this.scene.postProcessStages.add(
-      Cesium.PostProcessStageLibrary.createLensFlareStage()
+      Cesium.PostProcessStageLibrary.createLensFlareStage(),
     );
   }
 
@@ -1340,7 +1339,7 @@ export class CesiumComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'showDayNightLayer3d',
-      this.enableDayNightMap
+      this.enableDayNightMap,
     );
 
     if (this.enableDayNightMap) {
@@ -1360,7 +1359,7 @@ export class CesiumComponent implements OnInit {
     if (!this.earthAtNightLayer) {
       this.earthAtNightLayer = Cesium.ImageryLayer.fromProviderAsync(
         Cesium.IonImageryProvider.fromAssetId(3812, {}),
-        {}
+        {},
       );
     }
 
@@ -1390,14 +1389,14 @@ export class CesiumComponent implements OnInit {
       Cesium.Terrain.fromWorldTerrain({
         requestVertexNormals: true,
         requestWaterMask: false,
-      })
+      }),
     );
   }
 
   showClickedBehaviourOnButton(buttonId: string, isClicked: boolean) {
     const colorClicked = '#ffab40';
     const colorNotClicked = '#000';
-    if(document.getElementById(buttonId))
+    if (document.getElementById(buttonId))
       document.getElementById(buttonId)!.style.background = isClicked
         ? colorClicked
         : colorNotClicked;
@@ -1427,7 +1426,7 @@ export class CesiumComponent implements OnInit {
 
     if (this.followPlane3d) {
       let entity = this.entityGroupModel.entities.getById(
-        this.aircraft.hex + '_model'
+        this.aircraft.hex + '_model',
       );
       if (!entity) {
         this.followPlane3d = false;
@@ -1438,7 +1437,7 @@ export class CesiumComponent implements OnInit {
         entity,
         this.aircraftTrack,
         this.aircraftPitch,
-        false
+        false,
       );
       this.viewer.trackedEntity = entity;
 
@@ -1480,7 +1479,7 @@ export class CesiumComponent implements OnInit {
 
     const position = Cesium.Cartesian3.ZERO;
     const timestamp = Cesium.JulianDate.toDate(
-      this.viewer.clock.currentTime
+      this.viewer.clock.currentTime,
     ).getTime();
     const heading = Cesium.Math.toRadians(timestamp / 1000);
     const pitch = Cesium.Math.toRadians(0);
@@ -1488,7 +1487,7 @@ export class CesiumComponent implements OnInit {
     const hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
     const orientation = Cesium.Transforms.headingPitchRollQuaternion(
       position,
-      hpr
+      hpr,
     );
     return orientation;
   }
@@ -1510,7 +1509,7 @@ export class CesiumComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'showOsmBuildings3d',
-      this.displayOsmBuildings3d
+      this.displayOsmBuildings3d,
     );
 
     if (this.displayOsmBuildings3d) {
@@ -1527,7 +1526,7 @@ export class CesiumComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'showGooglePhotorealistic3d',
-      this.displayGooglePhotorealistic3d
+      this.displayGooglePhotorealistic3d,
     );
 
     if (this.displayGooglePhotorealistic3d) {
@@ -1557,7 +1556,7 @@ export class CesiumComponent implements OnInit {
           radii: new Cesium.Cartesian3(
             equatorialRadius + cloudAltitude,
             equatorialRadius + cloudAltitude,
-            polarRadius + cloudAltitude
+            polarRadius + cloudAltitude,
           ),
           material: new Cesium.ImageMaterialProperty({
             image: '../../../assets/clouds.png',
@@ -1567,7 +1566,7 @@ export class CesiumComponent implements OnInit {
           stackPartitions: 128,
           distanceDisplayCondition: new Cesium.DistanceDisplayCondition(
             0.0,
-            Infinity
+            Infinity,
           ),
         },
       });
@@ -1591,7 +1590,7 @@ export class CesiumComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'showShadows3d',
-      this.enableShadows3dMap
+      this.enableShadows3dMap,
     );
 
     this.viewer.shadows = this.enableShadows3dMap;
@@ -1603,7 +1602,7 @@ export class CesiumComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'showTerrainShadows3d',
-      this.enableTerrainShadows3dMap
+      this.enableTerrainShadows3dMap,
     );
 
     if (this.enableTerrainShadows3dMap) {
@@ -1619,7 +1618,7 @@ export class CesiumComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'showLighting3d',
-      this.enableLighting3dMap
+      this.enableLighting3dMap,
     );
 
     this.scene.globe.enableLighting = this.enableLighting3dMap;
@@ -1653,7 +1652,7 @@ export class CesiumComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'showAmbientOcclusion3d',
-      this.enableAmbientOcclusion3dMap
+      this.enableAmbientOcclusion3dMap,
     );
 
     this.scene.postProcessStages.ambientOcclusion.enabled =
@@ -1666,7 +1665,7 @@ export class CesiumComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'showAthmosphereLight3d',
-      this.enableAthmosphereLight3dMap
+      this.enableAthmosphereLight3dMap,
     );
 
     this.scene.globe.atmosphereLightIntensity = 20.0;
@@ -1703,7 +1702,7 @@ export class CesiumComponent implements OnInit {
     this.enableDefaultResolution3dMap = checked;
     Storage.savePropertyInLocalStorage(
       'showDefaultResolution3d',
-      this.enableDefaultResolution3dMap
+      this.enableDefaultResolution3dMap,
     );
     if (this.enableDefaultResolution3dMap) {
       this.viewer.resolutionScale = window.devicePixelRatio;
@@ -1720,7 +1719,7 @@ export class CesiumComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'showDebugInfo3d',
-      this.enableDebugInfo3dMap
+      this.enableDebugInfo3dMap,
     );
 
     this.viewer.scene.debugShowFramesPerSecond = this.enableDebugInfo3dMap;

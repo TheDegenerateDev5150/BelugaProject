@@ -74,7 +74,7 @@ export class AircraftTableComponent implements OnInit {
 
   constructor(
     private aircraftTableService: AircraftTableService,
-    private changeDetectorRefs: ChangeDetectorRef
+    private changeDetectorRefs: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {}
@@ -125,7 +125,7 @@ export class AircraftTableComponent implements OnInit {
         this.aircraftList.data.forEach((aircraft) =>
           aircraft.hex == aircraftToBeToggledInTable.hex
             ? this.selection.toggle(aircraft)
-            : null
+            : null,
         );
         this.changeDetectorRefs.detectChanges();
       });
@@ -135,7 +135,7 @@ export class AircraftTableComponent implements OnInit {
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(() => {
         this.aircraftList.data.forEach((aircraft) =>
-          this.selection.deselect(aircraft)
+          this.selection.deselect(aircraft),
         );
         this.changeDetectorRefs.detectChanges();
       });

@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class RainviewerService {
+export class WeatherService {
   constructor(private httpClient: HttpClient) {}
 
   getRainviewerUrlData(): Observable<any> {

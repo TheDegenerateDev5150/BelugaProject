@@ -44,7 +44,7 @@ import { Styles } from 'src/app/_classes/styles';
 import { Collection } from 'ol';
 import { Draw } from 'ol/interaction';
 import XYZ from 'ol/source/XYZ';
-import { RainviewerService } from 'src/app/_services/rainviewer-service/rainviewer-service.service';
+import { WeatherService } from 'src/app/_services/weather-service/weather-service.service';
 import { Maps } from 'src/app/_classes/maps';
 import { CesiumService } from 'src/app/_services/cesium-service/cesium-service.component';
 import {
@@ -60,6 +60,8 @@ import { ThemeManager } from 'src/app/_services/theme-service/theme-manager.serv
 import { Coordinate } from 'ol/coordinate';
 import { InfoService } from 'src/app/_services/info-service/info-service.service';
 import DayNight from 'ol-ext/source/DayNight';
+import { TileWMS } from 'ol/source';
+import { createXYZ, extentFromProjection } from 'ol/tilegrid';
 
 @Component({
   selector: 'app-map',
@@ -212,6 +214,12 @@ export class MapComponent implements OnInit {
   // Boolean, ob RainViewer (Rain) Data sichtbar ist
   showRainViewerRain: boolean = false;
 
+  // Boolean, ob DWD (Rain) Data sichtbar ist
+  showDwdRain: boolean = false;
+  dwdSource: TileWMS = new TileWMS();
+  dwdRainLayer: TileLayer<TileWMS> = new TileLayer();
+  refreshIntervalIdDwd: any;
+
   // Boolean, ob RainViewer Forecast (Rain) Data sichtbar ist
   showRainViewerRainForecast: boolean = false;
 
@@ -358,9 +366,9 @@ export class MapComponent implements OnInit {
     private settingsService: SettingsService,
     private toolbarService: ToolbarService,
     private aircraftTableService: AircraftTableService,
-    private rainviewerService: RainviewerService,
+    private weatherService: WeatherService,
     private cesiumService: CesiumService,
-    private infoService: InfoService
+    private infoService: InfoService,
   ) {}
 
   /**
@@ -393,14 +401,14 @@ export class MapComponent implements OnInit {
         (configuration) => this.setConfigurationValues(configuration),
         (error) => {
           console.error(
-            'Configuration could not be loaded. Is the server online? Program will not be executed further.'
+            'Configuration could not be loaded. Is the server online? Program will not be executed further.',
           );
           this.infoConfigurationFailureMessage =
             'Configuration could not be loaded. Is the server online? Program will not be executed further.';
         },
         () =>
           // Überprüfe gesetzte Werte, WebGl-Support und starte Programm
-          this.startProgramOrThrowError()
+          this.startProgramOrThrowError(),
       );
   }
 
@@ -449,8 +457,8 @@ export class MapComponent implements OnInit {
           new Feeder(
             configuration.listFeeder[i].name,
             configuration.listFeeder[i].type,
-            configuration.listFeeder[i].color
-          )
+            configuration.listFeeder[i].color,
+          ),
         );
       }
       this.selectedFeederUpdate = this.listFeeder.map((f) => f.name);
@@ -480,7 +488,7 @@ export class MapComponent implements OnInit {
     if (localStorage.getItem('globalIconSize') == null) {
       Storage.savePropertyInLocalStorage(
         'globalIconSize',
-        Globals.globalScaleFactorIcons
+        Globals.globalScaleFactorIcons,
       );
     }
 
@@ -489,7 +497,7 @@ export class MapComponent implements OnInit {
     if (localStorage.getItem('smallIconSize') == null) {
       Storage.savePropertyInLocalStorage(
         'smallIconSize',
-        Globals.smallScaleFactorIcons
+        Globals.smallScaleFactorIcons,
       );
     }
 
@@ -555,21 +563,21 @@ export class MapComponent implements OnInit {
     this.settingsService.toggleShowAircraftLabels$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((showAircraftLabel) =>
-        this.toggleShowAircraftLabels(showAircraftLabel)
+        this.toggleShowAircraftLabels(showAircraftLabel),
       );
 
     // Toggle Flughäfen auf der Karte
     this.settingsService.showAirportsUpdate$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((showAirportsUpdate) =>
-        this.toggleAirportsUpdate(showAirportsUpdate)
+        this.toggleAirportsUpdate(showAirportsUpdate),
       );
 
     // Zeige nur militärische Flugzeuge an
     this.settingsService.showOnlyMilitaryPlanesSource$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((showMilitaryPlanes) =>
-        this.toggleShowMilitaryPlanes(showMilitaryPlanes)
+        this.toggleShowMilitaryPlanes(showMilitaryPlanes),
       );
 
     // Toggle DarkMode
@@ -596,7 +604,7 @@ export class MapComponent implements OnInit {
     this.settingsService.setCurrentDevicePositionSource$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((setDevicePosition) =>
-        this.toggleSetCurrentDevicePosition(setDevicePosition)
+        this.toggleSetCurrentDevicePosition(setDevicePosition),
       );
 
     // Toggle Geräte-Standort als Basis für versch. Berechnungen (Zentrum für Range-Ringe,
@@ -604,14 +612,14 @@ export class MapComponent implements OnInit {
     this.settingsService.devicePositionAsBasisSource$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((devicePositionAsBasis) =>
-        this.toggleDevicePositionAsBasis(devicePositionAsBasis)
+        this.toggleDevicePositionAsBasis(devicePositionAsBasis),
       );
 
     // Toggle zeige/verstecke Flugzeug-Positionen
     this.settingsService.toggleShowAircraftPositions$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((showAircraftPositions) =>
-        this.toggleShowAircraftPositions(showAircraftPositions)
+        this.toggleShowAircraftPositions(showAircraftPositions),
       );
 
     // Callback für anderen Map-Stil
@@ -628,35 +636,35 @@ export class MapComponent implements OnInit {
     this.settingsService.darkStaticFeaturesSource$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((darkStaticFeatures) =>
-        this.toggleDarkStaticFeatures(darkStaticFeatures)
+        this.toggleDarkStaticFeatures(darkStaticFeatures),
       );
 
     // Setze Global icon size der Planes
     this.settingsService.setIconGlobalSizeSource$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((globalIconSizeFactor) =>
-        this.setGlobalIconSize(globalIconSizeFactor)
+        this.setGlobalIconSize(globalIconSizeFactor),
       );
 
     // Setze icon size für small Planes
     this.settingsService.setIconSmallSizeSource$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((smallIconSizeFactor) =>
-        this.setSmallIconSize(smallIconSizeFactor)
+        this.setSmallIconSize(smallIconSizeFactor),
       );
 
     // Zeige oder verstecke Altitude-Chart
     this.settingsService.showAltitudeChartSource$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((showAltitudeChart) =>
-        this.showHideAltitudeChartElement(showAltitudeChart)
+        this.showHideAltitudeChartElement(showAltitudeChart),
       );
 
     // Setze Min-Zoom für AIS Outlines
     this.settingsService.aisOutlineMinZoomSource$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(
-        (minZoomAisOutlines) => (this.minZoomAisOutlines = minZoomAisOutlines)
+        (minZoomAisOutlines) => (this.minZoomAisOutlines = minZoomAisOutlines),
       );
 
     // Resette Map mit gespeicherter SitePosition vom Server
@@ -673,7 +681,7 @@ export class MapComponent implements OnInit {
     this.settingsService.showRouteToDestinationSource$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((showRouteToDestination) =>
-        this.toggleRouteToDestination(showRouteToDestination)
+        this.toggleRouteToDestination(showRouteToDestination),
       );
   }
 
@@ -682,8 +690,13 @@ export class MapComponent implements OnInit {
     this.settingsService.rainViewerRain$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((showRainViewerRain) =>
-        this.createOrHideRainViewerRain(showRainViewerRain)
+        this.createOrHideRainViewerRain(showRainViewerRain),
       );
+
+    // Toggle DWD (Rain)
+    this.settingsService.dwdRain$
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((showDwdRain) => this.createOrHideDwdRain(showDwdRain));
 
     // Toggle Rainviewer Forecast (Rain)
     this.settingsService.rainViewerRainForecast$
@@ -699,28 +712,28 @@ export class MapComponent implements OnInit {
     this.aircraftTableService.hexMarkUnmarkAircraft$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((hexMarkUnmarkAircraft) =>
-        this.markUnmarkAircraftFromAircraftTable(hexMarkUnmarkAircraft)
+        this.markUnmarkAircraftFromAircraftTable(hexMarkUnmarkAircraft),
       );
 
     // Zeige Flugzeuge nach selektiertem Feeder an
     this.settingsService.selectedFeederUpdate$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((selectedFeederUpdate) =>
-        this.showAircraftFromFeeder(selectedFeederUpdate)
+        this.showAircraftFromFeeder(selectedFeederUpdate),
       );
 
     // Zeige Opensky Flugzeuge und Flugzeuge nach selektiertem Feeder an
     this.settingsService.showOpenskyPlanes$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((showOpenskyPlanes) =>
-        this.toggleOpenSkyPlanes(showOpenskyPlanes)
+        this.toggleOpenSkyPlanes(showOpenskyPlanes),
       );
 
     // Zeige Airplanes-Live Flugzeuge und Flugzeuge nach selektiertem Feeder an
     this.settingsService.showAirplanesLivePlanesSource$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((showAirplanesLivePlanes) =>
-        this.toggleAirplanesLivePlanes(showAirplanesLivePlanes)
+        this.toggleAirplanesLivePlanes(showAirplanesLivePlanes),
       );
 
     // AIS-Daten
@@ -737,7 +750,7 @@ export class MapComponent implements OnInit {
     this.settingsService.nominatimFetchedCoordinatesSource$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((addressCoordinates) =>
-        this.processNominatimCoordinates(addressCoordinates)
+        this.processNominatimCoordinates(addressCoordinates),
       );
   }
 
@@ -746,21 +759,21 @@ export class MapComponent implements OnInit {
     this.settingsService.showActualRangeOutlineSource$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((showActualRangeOutline) =>
-        this.toggleActualRangeOutline(showActualRangeOutline)
+        this.toggleActualRangeOutline(showActualRangeOutline),
       );
 
     // Toggle markiere Outline-Data nach Feeder
     this.settingsService.toggleMarkOutlineDataByFeeder$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((toggleMarkOutlineDataByFeeder) =>
-        this.toggleMarkOutlineDataByFeeder(toggleMarkOutlineDataByFeeder)
+        this.toggleMarkOutlineDataByFeeder(toggleMarkOutlineDataByFeeder),
       );
 
     // Toggle markiere Outline-Data nach Höhe
     this.settingsService.toggleMarkOutlineDataByHeight$
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((toggleMarkOutlineDataByHeight) =>
-        this.toggleMarkOutlineDataByHeight(toggleMarkOutlineDataByHeight)
+        this.toggleMarkOutlineDataByHeight(toggleMarkOutlineDataByHeight),
       );
   }
 
@@ -896,7 +909,7 @@ export class MapComponent implements OnInit {
     });
 
     const feature = new Feature(
-      new Point(olProj.fromLonLat(Globals.SitePosition))
+      new Point(olProj.fromLonLat(Globals.SitePosition)),
     );
     feature.setStyle(antennaStyle);
     this.StaticFeatures.addFeature(feature);
@@ -965,20 +978,20 @@ export class MapComponent implements OnInit {
   private createOLMap(
     interactions: Collection<olInteraction.Interaction>,
     control: ScaleLine,
-    attribution: Attribution
+    attribution: Attribution,
   ) {
     let center, zoom;
 
     let lastCenterPosition = Storage.getPropertyFromLocalStorage(
       'lastCenterPosition',
-      undefined
+      undefined,
     );
     if (lastCenterPosition)
       lastCenterPosition = olProj.fromLonLat(lastCenterPosition);
 
     const lastCenterZoomLevel = Storage.getPropertyFromLocalStorage(
       'lastCenterZoomLevel',
-      undefined
+      undefined,
     );
 
     if (lastCenterPosition && lastCenterZoomLevel) {
@@ -1013,7 +1026,7 @@ export class MapComponent implements OnInit {
     renderBuffer: number | undefined,
     tags: {},
     style?: StyleLike | null | undefined,
-    minZoom?: number | undefined
+    minZoom?: number | undefined,
   ): VectorLayer<Vector<Feature>> {
     const layer = new VectorLayer({
       source: source,
@@ -1030,7 +1043,7 @@ export class MapComponent implements OnInit {
   private createLayerGroup(
     layers: BaseLayer[] | Collection<BaseLayer> | undefined,
     zIndex: number | undefined,
-    tags: {}
+    tags: {},
   ) {
     const layerGroup = new LayerGroup({
       layers: layers,
@@ -1062,7 +1075,7 @@ export class MapComponent implements OnInit {
       false,
       renderBuffer,
       { name: 'plane_labels', type: 'overlay', title: 'plane labels' },
-      this.planeLabelStyle
+      this.planeLabelStyle,
     );
     this.layers.push(this.planeLabelFeatureLayer);
 
@@ -1081,7 +1094,7 @@ export class MapComponent implements OnInit {
       false,
       renderBuffer,
       { name: 'pomd_positions', type: 'overlay', title: 'POMD positions' },
-      undefined
+      undefined,
     );
     this.layers.push(pomdLayer);
 
@@ -1098,7 +1111,7 @@ export class MapComponent implements OnInit {
           width: 2,
           lineDash: [0.2, 5],
         }),
-      })
+      }),
     );
     this.layers.push(routeLayer);
 
@@ -1109,7 +1122,7 @@ export class MapComponent implements OnInit {
       false,
       renderBuffer,
       { name: 'device_position', type: 'overlay' },
-      new Style({})
+      new Style({}),
     );
     this.layers.push(this.drawLayer);
 
@@ -1131,7 +1144,7 @@ export class MapComponent implements OnInit {
           width: 1.7,
           lineDash: undefined,
         }),
-      })
+      }),
     );
     this.layers.push(this.actualOutlineFeatureLayer);
 
@@ -1146,7 +1159,7 @@ export class MapComponent implements OnInit {
         type: 'overlay',
         title: 'site position and range rings',
       },
-      undefined
+      undefined,
     );
     this.layers.push(staticFeaturesLayer);
 
@@ -1157,7 +1170,7 @@ export class MapComponent implements OnInit {
       false,
       renderBuffer,
       { name: 'ap_positions', type: 'overlay', title: 'airport positions' },
-      undefined
+      undefined,
     );
     this.layers.push(this.airportLayer);
 
@@ -1168,7 +1181,7 @@ export class MapComponent implements OnInit {
       false,
       renderBuffer,
       { name: 'ais_labels', type: 'overlay', title: 'ais labels' },
-      this.aisLabelStyle
+      this.aisLabelStyle,
     );
     this.layers.push(this.aisLabelFeatureLayer);
 
@@ -1179,7 +1192,7 @@ export class MapComponent implements OnInit {
       false,
       renderBuffer,
       { name: 'ais_positions', type: 'overlay', title: 'ais positions' },
-      this.aisMarkerStyle
+      this.aisMarkerStyle,
     );
     this.layers.push(this.aisFeatureLayer);
 
@@ -1195,7 +1208,7 @@ export class MapComponent implements OnInit {
         title: 'ais outline positions',
       },
       this.aisOutlineStyleFunction,
-      this.minZoomAisOutlines
+      this.minZoomAisOutlines,
     );
     this.layers.push(this.aisOutlineFeaturesLayer);
   }
@@ -1263,7 +1276,7 @@ export class MapComponent implements OnInit {
       fill: new Fill({
         color: `rgba(${parseInt(c.slice(-6, -4), 16)}, ${parseInt(
           c.slice(-4, -2),
-          16
+          16,
         )}, ${parseInt(c.slice(-2), 16)}, ${o})`,
       }),
       stroke: new Stroke({
@@ -1281,7 +1294,7 @@ export class MapComponent implements OnInit {
     Globals.webgl = this.initWebgl();
     if (!Globals.webgl)
       this.showErrorLogAndSnackBar(
-        'WebGL could not be initialized. If this browser does not support WebGL use another browser.'
+        'WebGL could not be initialized. If this browser does not support WebGL use another browser.',
       );
   }
 
@@ -1384,7 +1397,7 @@ export class MapComponent implements OnInit {
       this.updatePlanesFromServer(
         this.selectedFeederUpdate,
         this.showIss,
-        this.showOnlyMilitary
+        this.showOnlyMilitary,
       );
     }, 2000);
   }
@@ -1412,7 +1425,7 @@ export class MapComponent implements OnInit {
       this.updatePlanesFromServer(
         this.selectedFeederUpdate,
         this.showIss,
-        this.showOnlyMilitary
+        this.showOnlyMilitary,
       );
 
       if (this.showAirportsUpdate) {
@@ -1430,18 +1443,18 @@ export class MapComponent implements OnInit {
     const lastCenterPosition = olProj.transform(
       this.OLMap.getView().getCenter(),
       'EPSG:3857',
-      'EPSG:4326'
+      'EPSG:4326',
     );
 
     const lastCenterZoomLevel: number = this.OLMap.getView().getZoom();
 
     Storage.savePropertyInLocalStorage(
       'lastCenterPosition',
-      lastCenterPosition
+      lastCenterPosition,
     );
     Storage.savePropertyInLocalStorage(
       'lastCenterZoomLevel',
-      lastCenterZoomLevel
+      lastCenterZoomLevel,
     );
 
     this.sendCurrentZoomLevelToSettings(+lastCenterZoomLevel.toFixed(2));
@@ -1528,7 +1541,7 @@ export class MapComponent implements OnInit {
         extent[1],
         extent[2],
         extent[3],
-        zoomLevel
+        zoomLevel,
       )
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(
@@ -1539,10 +1552,10 @@ export class MapComponent implements OnInit {
         },
         (error) => {
           this.showErrorLogAndSnackBar(
-            'Error updating the airports from the server. Is the server running?'
+            'Error updating the airports from the server. Is the server running?',
           );
           this.pendingFetchesAirports--;
-        }
+        },
       );
   }
 
@@ -1563,7 +1576,7 @@ export class MapComponent implements OnInit {
     if (!airport) return;
 
     const airportPoint = new Point(
-      olProj.fromLonLat([airport.longitude_deg, airport.latitude_deg])
+      olProj.fromLonLat([airport.longitude_deg, airport.latitude_deg]),
     );
 
     const airportFeature: any = new Feature(airportPoint);
@@ -1629,7 +1642,7 @@ export class MapComponent implements OnInit {
   private updatePlanesFromServer(
     selectedFeeder: any,
     showIss: boolean,
-    showOnlyMilitary: boolean
+    showOnlyMilitary: boolean,
   ) {
     if (this.pendingFetchesPlanes > 0 || this.mapIsBeingMoved) return;
 
@@ -1654,7 +1667,7 @@ export class MapComponent implements OnInit {
         this.aircraft && this.aircraft.isFromRemote == null
           ? this.aircraft.hex
           : null, // hex des markierten Flugzeugs
-        showOnlyMilitary
+        showOnlyMilitary,
       )
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(
@@ -1663,14 +1676,14 @@ export class MapComponent implements OnInit {
         },
         (error) => {
           this.showErrorLogAndSnackBar(
-            'Error updating the planes from the server. Is the server running?'
+            'Error updating the planes from the server. Is the server running?',
           );
 
           // Aktualisiere angezeigte Flugzeug-Zähler
           this.updatePlanesCounter(0);
 
           this.pendingFetchesPlanes--;
-        }
+        },
       );
   }
 
@@ -1684,7 +1697,7 @@ export class MapComponent implements OnInit {
     // Wenn eine Route angezeigt wird, aktualisiere nur das ausgewählte Flugzeug
     if (this.showRoute) {
       planesJSONArray = planesJSONArray.filter(
-        (a) => a.hex === this.aircraft?.hex
+        (a) => a.hex === this.aircraft?.hex,
       );
       if (planesJSONArray == undefined) {
         this.pendingFetchesPlanes--;
@@ -1724,14 +1737,14 @@ export class MapComponent implements OnInit {
 
     let aircraftSendWithPos = 0;
     aircraftSendWithPos = Globals.PlanesOrdered.filter(
-      (plane) => plane.sendWithPos == true
+      (plane) => plane.sendWithPos == true,
     ).length;
 
     this.titleService.setTitle(
       'Beluga Project  - ' +
         aircraftSendWithPos +
         '/' +
-        Globals.amountDisplayedAircraft
+        Globals.amountDisplayedAircraft,
     );
 
     this.toolbarService.updateAircraftCounter(Globals.amountDisplayedAircraft);
@@ -1764,7 +1777,7 @@ export class MapComponent implements OnInit {
         aircraft,
         aircraftJSON,
         hex,
-        isNewAircraft
+        isNewAircraft,
       ));
     } else {
       aircraft.updateData(aircraftJSON);
@@ -1809,7 +1822,7 @@ export class MapComponent implements OnInit {
     aircraft: Aircraft,
     aircraftJSON: Aircraft,
     hex: string,
-    isNewAircraft: boolean
+    isNewAircraft: boolean,
   ) {
     aircraft = Aircraft.createNewAircraft(aircraftJSON);
     this.Planes[hex] = aircraft;
@@ -1829,7 +1842,7 @@ export class MapComponent implements OnInit {
       .getAllAircraftData(
         aircraft.hex,
         aircraft.registration,
-        aircraft.isFromRemote == null ? false : true
+        aircraft.isFromRemote == null ? false : true,
       )
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(
@@ -1837,14 +1850,14 @@ export class MapComponent implements OnInit {
           this.processAllAircraftData(aircraft, aircraftDataJSONObject),
         (error) =>
           this.showErrorLogAndSnackBar(
-            'Error fetching further aircraft information from the server. Is the server running?'
-          )
+            'Error fetching further aircraft information from the server. Is the server running?',
+          ),
       );
   }
 
   private processAllAircraftData(
     aircraft: Aircraft,
-    aircraftDataJSONObject: any
+    aircraftDataJSONObject: any,
   ) {
     if (
       aircraftDataJSONObject &&
@@ -1946,7 +1959,7 @@ export class MapComponent implements OnInit {
       .getTrail(
         aircraft.hex,
         selectedFeeder,
-        this.showOpenskyPlanes ? 'Opensky' : null
+        this.showOpenskyPlanes ? 'Opensky' : null,
       )
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(
@@ -1954,8 +1967,8 @@ export class MapComponent implements OnInit {
           this.processTrail(trailDataJSONObject, aircraft),
         (error) =>
           this.showErrorLogAndSnackBar(
-            'Error fetching trail of aircraft from the server. Is the server running?'
-          )
+            'Error fetching trail of aircraft from the server. Is the server running?',
+          ),
       );
   }
 
@@ -1994,7 +2007,7 @@ export class MapComponent implements OnInit {
     if (!this.aircraft) return;
 
     this.settingsService.sendAircraftAltitudeData(
-      this.aircraft.aircraftTrailAltitudes
+      this.aircraft.aircraftTrailAltitudes,
     );
   }
 
@@ -2014,7 +2027,7 @@ export class MapComponent implements OnInit {
         layerFilter: (layer) =>
           layer == this.webglLayer || this.planeLabelFeatureLayer,
         hitTolerance: 5,
-      }
+      },
     );
   }
 
@@ -2027,7 +2040,7 @@ export class MapComponent implements OnInit {
       {
         layerFilter: (layer) => layer == requiredLayer1 || requiredLayer2,
         hitTolerance: 5,
-      }
+      },
     );
   }
 
@@ -2049,7 +2062,7 @@ export class MapComponent implements OnInit {
       if (this.showActualRangeOutline) {
         featurePoint = this.getFeatureFromClickOnLayer(
           evt,
-          this.actualOutlineFeatureLayer
+          this.actualOutlineFeatureLayer,
         );
         if (featurePoint && featurePoint.name === 'OutlineDataPoint') {
           this.createAndShowOutlineDataPopup(featurePoint, evt);
@@ -2069,7 +2082,7 @@ export class MapComponent implements OnInit {
         featurePoint = this.getFeatureFromClickOnLayer(
           evt,
           this.aisFeatureLayer,
-          this.aisLabelFeatureLayer
+          this.aisLabelFeatureLayer,
         );
         if (featurePoint && featurePoint.featureName === 'AisDataPoint') {
           this.createAndShowAisDataPopup(featurePoint, evt);
@@ -2122,7 +2135,7 @@ export class MapComponent implements OnInit {
         this.centerMap(
           aircraft.longitude,
           aircraft.latitude,
-          Globals.zoomLevel
+          Globals.zoomLevel,
         );
       }
     }
@@ -2177,7 +2190,7 @@ export class MapComponent implements OnInit {
   }
 
   private createAttributes(
-    attributesConfig: { key: string; value: any }[]
+    attributesConfig: { key: string; value: any }[],
   ): { key: string; value: string }[] {
     return attributesConfig.map((attr) => ({
       key: attr.key,
@@ -2188,7 +2201,7 @@ export class MapComponent implements OnInit {
   private createAndDisplayPopup(
     elementId: string,
     dataPoint: any,
-    evt: any
+    evt: any,
   ): Overlay {
     const overlay = new Overlay({
       element: document.getElementById(elementId)!,
@@ -2213,12 +2226,13 @@ export class MapComponent implements OnInit {
         year: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-      }
+      },
     );
 
     this.outlineDataPoint = {
       flightId: this.getValueOrDefault(outlinePoint.flightId),
       hex: this.getValueOrDefault(outlinePoint.hex),
+      angleToSite: outlinePoint.angleToSite,
       attributes: this.createAttributes([
         {
           key: 'Latitude',
@@ -2260,7 +2274,7 @@ export class MapComponent implements OnInit {
     this.outlineDataPopup = this.createAndDisplayPopup(
       'outlineDataPopup',
       outlinePoint,
-      evt
+      evt,
     );
     this.outlineDataPopupBottomValue = '10px';
     this.showOutlinePointPopup = true;
@@ -2292,7 +2306,7 @@ export class MapComponent implements OnInit {
     this.airportDataPopup = this.createAndDisplayPopup(
       'airportDataPopup',
       airportPoint,
-      evt
+      evt,
     );
     this.airportDataPopupBottomValue = '10px';
   }
@@ -2371,7 +2385,7 @@ export class MapComponent implements OnInit {
     this.aisDataPopup = this.createAndDisplayPopup(
       'aisDataPopup',
       aisDataPoint,
-      evt
+      evt,
     );
     this.aisDataPopupBottomValue = '10px';
   }
@@ -2392,13 +2406,13 @@ export class MapComponent implements OnInit {
           if (photoUrlJson == null || photoUrlJson == '') return;
           this.aisDataPoint.photoUrl = photoUrlJson.photoUrl.toString();
         },
-        (error) => {}
+        (error) => {},
       );
   }
 
   private resetPopup(
     popup: Overlay | undefined,
-    popupBottomValueProperty: string
+    popupBottomValueProperty: string,
   ): void {
     if (popup) {
       popup.setPosition(undefined);
@@ -2452,7 +2466,7 @@ export class MapComponent implements OnInit {
         {
           layerFilter: (layer) => layer == this.webglLayer,
           hitTolerance: 5,
-        }
+        },
       );
 
       if (feature && feature.hex) {
@@ -2487,7 +2501,7 @@ export class MapComponent implements OnInit {
       ];
 
       const markerPosition = this.OLMap.getPixelFromCoordinate(
-        coordinatesNormalized
+        coordinatesNormalized,
       );
       if (!markerPosition) return;
 
@@ -2515,7 +2529,7 @@ export class MapComponent implements OnInit {
           value: this.getValueOrDefault(
             typeof aircraft.altitude !== 'undefined'
               ? aircraft.altitude + ' ft'
-              : undefined
+              : undefined,
           ),
         },
         {
@@ -2523,7 +2537,7 @@ export class MapComponent implements OnInit {
           value: this.getValueOrDefault(
             typeof aircraft.speed !== 'undefined'
               ? aircraft.speed + ' kn'
-              : undefined
+              : undefined,
           ),
         },
         { key: 'Type', value: this.getValueOrDefault(aircraft.type) },
@@ -2536,7 +2550,7 @@ export class MapComponent implements OnInit {
           value: this.getValueOrDefault(
             typeof aircraft.track !== 'undefined'
               ? aircraft.track + ' °'
-              : undefined
+              : undefined,
           ),
         },
         {
@@ -2544,7 +2558,7 @@ export class MapComponent implements OnInit {
           value: this.getValueOrDefault(
             typeof aircraft.lastSeenPos !== 'undefined'
               ? aircraft.lastSeenPos + ' s'
-              : undefined
+              : undefined,
           ),
         },
         { key: 'Feeder', value: this.getValueOrDefault(aircraft.feederList) },
@@ -2583,7 +2597,7 @@ export class MapComponent implements OnInit {
       this.centerMap(
         this.oldCenterPosition[0],
         this.oldCenterPosition[1],
-        this.oldCenterZoomLevel
+        this.oldCenterZoomLevel,
       );
     }
   }
@@ -2600,7 +2614,7 @@ export class MapComponent implements OnInit {
       this.oldCenterPosition = olProj.transform(
         this.OLMap.getView().getCenter(),
         'EPSG:3857',
-        'EPSG:4326'
+        'EPSG:4326',
       );
 
       this.oldCenterZoomLevel = this.OLMap.getView().getZoom();
@@ -2612,7 +2626,7 @@ export class MapComponent implements OnInit {
       // (Herkunfts- und Zielort) angezeigt werden können
       this.extentMapViewToFitCoordiates(
         this.aircraft.positionOrg,
-        this.aircraft.positionDest
+        this.aircraft.positionDest,
       );
     }
   }
@@ -2629,12 +2643,12 @@ export class MapComponent implements OnInit {
     // Linie von Herkunftsort -> Flugzeug
     this.createAndAddCircleToFeature(
       this.aircraft.positionOrg,
-      this.aircraft.position
+      this.aircraft.position,
     );
     // Linie von Flugzeug -> Zielort
     this.createAndAddCircleToFeature(
       this.aircraft.position,
-      this.aircraft.positionDest
+      this.aircraft.positionDest,
     );
   }
 
@@ -2646,15 +2660,15 @@ export class MapComponent implements OnInit {
    */
   private createAndAddCircleToFeature(
     startPosition: number[],
-    endPosition: number[]
+    endPosition: number[],
   ) {
     // Erstelle GreatCircle-Linie
     let greatCircleLine = new LineString(
-      olExtSphere.greatCircleTrack(startPosition, endPosition)
+      olExtSphere.greatCircleTrack(startPosition, endPosition),
     );
     greatCircleLine.transform(
       'EPSG:4326',
-      this.OLMap.getView().getProjection()
+      this.OLMap.getView().getProjection(),
     );
 
     // Füge GreatCircle-Linie als neues Feature zu DestCircleFeatures hinzu
@@ -2680,7 +2694,7 @@ export class MapComponent implements OnInit {
     boundingExtent = olProj.transformExtent(
       boundingExtent,
       source,
-      destination
+      destination,
     );
     this.OLMap.getView().fit(boundingExtent, this.OLMap.getSize());
 
@@ -2702,7 +2716,7 @@ export class MapComponent implements OnInit {
    */
   private centerMap(long: number, lat: number, zoomLevel: number) {
     this.OLMap.getView().setCenter(
-      olProj.transform([long, lat], 'EPSG:4326', 'EPSG:3857')
+      olProj.transform([long, lat], 'EPSG:4326', 'EPSG:3857'),
     );
     this.OLMap.getView().setZoom(zoomLevel);
   }
@@ -2759,7 +2773,7 @@ export class MapComponent implements OnInit {
     // Linie von Flugzeug -> Zielort
     this.createAndAddCircleToFeature(
       this.aircraft.position,
-      this.aircraft.positionDest
+      this.aircraft.positionDest,
     );
   }
 
@@ -2769,7 +2783,7 @@ export class MapComponent implements OnInit {
 
     this.planeLabelFeatureLayer.setVisible(Globals.showAircraftLabel);
     this.aisLabelFeatureLayer.setVisible(
-      Globals.showAircraftLabel && this.OLMap.getView().getZoom() > 11.5
+      Globals.showAircraftLabel && this.OLMap.getView().getZoom() > 11.5,
     );
   }
 
@@ -2811,10 +2825,10 @@ export class MapComponent implements OnInit {
     ]);
     this.settingsService.sendReceiveClientIp(Globals.clientIp);
     this.settingsService.sendReceiveOpenskyCredentialsExist(
-      Globals.openskyCredentials
+      Globals.openskyCredentials,
     );
     this.settingsService.sendReceiveAisstreamApiKeyExists(
-      this.aisstreamApiKeyExists
+      this.aisstreamApiKeyExists,
     );
     this.sendAvailableMapsToSettings();
   }
@@ -2863,7 +2877,7 @@ export class MapComponent implements OnInit {
     this.removeFeatureFromFeatures(
       this.PlaneLabelFeatures,
       'hex',
-      aircraft.hex
+      aircraft.hex,
     );
 
     // Entferne Flugzeug als aktuell markiertes Flugzeug, wenn es dieses ist
@@ -2878,7 +2892,7 @@ export class MapComponent implements OnInit {
    * @param shouldRemove Funktion, die bestimmt, ob ein Flugzeug entfernt werden soll.
    */
   private removeAircraftBasedOnCondition(
-    shouldRemove: (aircraft: Aircraft) => boolean
+    shouldRemove: (aircraft: Aircraft) => boolean,
   ) {
     let length = Globals.PlanesOrdered.length;
 
@@ -2903,20 +2917,20 @@ export class MapComponent implements OnInit {
         aircraft.isFromRemote !== undefined &&
         aircraft.isFromRemote !== null &&
         (aircraft.isFromRemote == 'Airplanes-Live' ||
-          aircraft.isFromRemote == 'Opensky')
+          aircraft.isFromRemote == 'Opensky'),
     );
   }
 
   private removeAllNotSelectedFeederPlanes(selectedFeeder: string) {
     this.removeAircraftBasedOnCondition(
       (aircraft) =>
-        !aircraft.isMarked && !aircraft.feederList.includes(selectedFeeder)
+        !aircraft.isMarked && !aircraft.feederList.includes(selectedFeeder),
     );
   }
 
   private removeISSFromPlanes() {
     this.removeAircraftBasedOnCondition(
-      (aircraft) => !aircraft.isMarked && aircraft.hex === 'ISS'
+      (aircraft) => !aircraft.isMarked && aircraft.hex === 'ISS',
     );
   }
 
@@ -2927,7 +2941,7 @@ export class MapComponent implements OnInit {
   private removePlanesNotInCurrentExtent(extent) {
     this.removeAircraftBasedOnCondition(
       (aircraft) =>
-        !aircraft.isMarked && !this.planeInView(aircraft.position, extent)
+        !aircraft.isMarked && !this.planeInView(aircraft.position, extent),
     );
   }
 
@@ -2972,7 +2986,7 @@ export class MapComponent implements OnInit {
       this.centerMap(
         this.oldISSCenterPosition[0],
         this.oldISSCenterPosition[1],
-        this.oldISSCenterZoomLevel
+        this.oldISSCenterZoomLevel,
       );
     }
   }
@@ -2985,8 +2999,8 @@ export class MapComponent implements OnInit {
         (IssJSONObject) => this.processISS(IssJSONObject),
         (error) =>
           this.showErrorLogAndSnackBar(
-            'Error updating the iss without extent from the server. Is the server running?'
-          )
+            'Error updating the iss without extent from the server. Is the server running?',
+          ),
       );
   }
 
@@ -3008,7 +3022,7 @@ export class MapComponent implements OnInit {
     this.oldISSCenterPosition = olProj.transform(
       this.OLMap.getView().getCenter(),
       'EPSG:3857',
-      'EPSG:4326'
+      'EPSG:4326',
     );
     this.oldISSCenterZoomLevel = this.OLMap.getView().getZoom();
 
@@ -3046,7 +3060,7 @@ export class MapComponent implements OnInit {
 
       Storage.savePropertyInLocalStorage(
         'coordinatesDevicePosition',
-        Globals.DevicePosition
+        Globals.DevicePosition,
       );
 
       this.DrawFeature.clear();
@@ -3066,7 +3080,7 @@ export class MapComponent implements OnInit {
     ) {
       let coordinatesDevicePosition = Storage.getPropertyFromLocalStorage(
         'coordinatesDevicePosition',
-        null
+        null,
       );
 
       if (coordinatesDevicePosition) {
@@ -3090,12 +3104,12 @@ export class MapComponent implements OnInit {
         this.removeFeatureFromFeatures(
           this.StaticFeatures,
           'name',
-          'devicePosition'
+          'devicePosition',
         );
       }
 
       let feature = new Feature(
-        new Point(olProj.fromLonLat(coordinatesDevicePosition))
+        new Point(olProj.fromLonLat(coordinatesDevicePosition)),
       );
       feature.setStyle(Styles.DevicePositionStyle);
       feature.set('name', 'devicePosition');
@@ -3112,7 +3126,7 @@ export class MapComponent implements OnInit {
       this.removeFeatureFromFeatures(
         this.StaticFeatures,
         'name',
-        'devicePosition'
+        'devicePosition',
       );
 
       localStorage.removeItem('coordinatesDevicePosition');
@@ -3125,17 +3139,17 @@ export class MapComponent implements OnInit {
   private removeFeatureFromFeatures(
     vectorFeatures: Vector,
     featureKey: string,
-    featureValue: string
+    featureValue: string,
   ) {
     if (!vectorFeatures) return;
 
     const features = vectorFeatures.getFeatures();
     const featuresToRemove = features.filter(
       (feature: { get: (arg: string) => any }) =>
-        feature.get(featureKey) === featureValue
+        feature.get(featureKey) === featureValue,
     );
     featuresToRemove.forEach((feature) =>
-      vectorFeatures.removeFeature(feature)
+      vectorFeatures.removeFeature(feature),
     );
   }
 
@@ -3197,16 +3211,13 @@ export class MapComponent implements OnInit {
     }
 
     // Stoppe requests nach rainviewer
-    if (
-      !this.showRainViewerRain &&
-      !this.showRainViewerRainForecast
-    ) {
+    if (!this.showRainViewerRain && !this.showRainViewerRainForecast) {
       this.stopRequestsToRainviewer();
     }
 
     this.rainviewerRainLayer?.set(
       'visible',
-      this.showRainViewerRain || this.showRainViewerRainForecast
+      this.showRainViewerRain || this.showRainViewerRainForecast,
     );
   }
 
@@ -3241,12 +3252,13 @@ export class MapComponent implements OnInit {
   }
 
   private makeRequestRainviewerApi() {
-    this.rainviewerService
+    this.weatherService
       .getRainviewerUrlData()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(
         (rainviewerUrlData) => this.processRainviewerApi(rainviewerUrlData),
-        (error) => this.showErrorLogAndSnackBar('Error loading rainviewer data')
+        (error) =>
+          this.showErrorLogAndSnackBar('Error loading rainviewer data'),
       );
   }
 
@@ -3299,7 +3311,7 @@ export class MapComponent implements OnInit {
     size: number,
     color: number,
     smoothImage: number,
-    displaySnowInSeperateColor: number
+    displaySnowInSeperateColor: number,
   ) {
     const baseUrl = 'https://tilecache.rainviewer.com';
     return (
@@ -3336,9 +3348,9 @@ export class MapComponent implements OnInit {
       let timeoutHandler = window.setTimeout(
         () =>
           this.showRainViewerForecastAnimationFrame(
-            this.forecastRainPathAndTime[i]
+            this.forecastRainPathAndTime[i],
           ),
-        i * intervalMs
+        i * intervalMs,
       );
       this.timeoutHandlerForecastAnimation.push(timeoutHandler);
     }
@@ -3349,7 +3361,7 @@ export class MapComponent implements OnInit {
       this.rainviewerRainLayer
         .getSource()
         ?.setUrl(
-          this.buildRainViewerUrlRain(forecastRainPathAndTimeFrame.path)
+          this.buildRainViewerUrlRain(forecastRainPathAndTimeFrame.path),
         );
       this.showForecastHintSnackbar(forecastRainPathAndTimeFrame.time);
     }
@@ -3368,6 +3380,81 @@ export class MapComponent implements OnInit {
       }
       this.timeoutHandlerForecastAnimation = [];
     }
+  }
+
+  private createOrHideDwdRain(showDwdRain: boolean) {
+    this.showDwdRain = showDwdRain;
+
+    if (this.showDwdRain) {
+      this.createDwdRainLayer();
+
+      if (this.refreshIntervalIdDwd == undefined) {
+        this.initUpdateDwdData();
+      }
+    } else {
+      this.removeDwdRainLayer();
+    }
+
+    // Stoppe requests nach rainviewer
+    if (!this.showDwdRain) {
+      this.stopRequestsToDwd();
+    }
+
+    this.dwdRainLayer?.set('visible', this.showDwdRain);
+  }
+
+  private createDwdRainLayer() {
+    if (this.layers == undefined) return;
+
+    this.dwdSource = new TileWMS({
+      url: 'https://maps.dwd.de/geoserver/wms',
+      params: { LAYERS: 'dwd:RADOLAN-RY', validtime: new Date().getTime() },
+      projection: 'EPSG:3857',
+      attributions: 'Deutscher Wetterdienst (DWD)',
+      attributionsCollapsible: false,
+      tileGrid: createXYZ({
+        extent: extentFromProjection('EPSG:3857'),
+        maxResolution: 156543.03392804097,
+        minZoom: 0,
+        tileSize: 512,
+      }),
+    });
+
+    this.dwdRainLayer = new TileLayer({
+      source: this.dwdSource,
+      opacity: 0.3,
+    });
+
+    this.layers.push(this.dwdRainLayer);
+  }
+
+  private initUpdateDwdData() {
+    // Update der DWD-Daten alle fünfzehn Sekunden automatisch,
+    // auch wenn sich Map nicht bewegt
+    this.refreshIntervalIdDwd = window.setInterval(() => {
+      this.updateDwdRainLayer();
+    }, 15000);
+  }
+
+  private updateDwdRainLayer() {
+    if (this.dwdRainLayer == null) return;
+
+    let dwdValidtime;
+    let ms = Date.now();
+    let validtime = (ms - (ms % (5 * 60 * 1000))) / 1000;
+    if (validtime != dwdValidtime) {
+      this.dwdRainLayer.getSource()?.updateParams({ validtime: validtime });
+      dwdValidtime = validtime;
+    }
+  }
+
+  private removeDwdRainLayer() {
+    this.layers?.remove(this.dwdRainLayer);
+  }
+
+  private stopRequestsToDwd() {
+    clearInterval(this.refreshIntervalIdDwd);
+    this.refreshIntervalIdDwd = undefined;
   }
 
   private toggleShowAircraftPositions(showAircraftPositions: boolean) {
@@ -3394,7 +3481,7 @@ export class MapComponent implements OnInit {
    */
   private saveMapStyleInLocalStorage(selectedMapStyle: any) {
     let mapStyle = this.listAvailableMaps.filter(
-      (mapStyle) => mapStyle.name == selectedMapStyle
+      (mapStyle) => mapStyle.name == selectedMapStyle,
     );
     Storage.savePropertyInLocalStorage('mapStyle', mapStyle);
   }
@@ -3433,7 +3520,7 @@ export class MapComponent implements OnInit {
     this.updatePlanesFromServer(
       this.selectedFeederUpdate,
       this.showIss,
-      this.showOnlyMilitary
+      this.showOnlyMilitary,
     );
 
     // Aktualisiere actual range outline
@@ -3465,7 +3552,7 @@ export class MapComponent implements OnInit {
     if (show3dMap && !this.cesiumIonDefaultAccessToken) {
       this.openSnackbar(
         `Cesium Ion Default Access Token is not available. 3D-Map cannot be used!`,
-        3000
+        3000,
       );
       show3dMap = !this.display3dMap;
       return;
@@ -3485,7 +3572,7 @@ export class MapComponent implements OnInit {
 
   private removeAllNotMilitaryPlanes() {
     this.removeAircraftBasedOnCondition(
-      (aircraft) => !aircraft.isMarked && aircraft.isMilitary != 'Y'
+      (aircraft) => !aircraft.isMarked && aircraft.isMilitary != 'Y',
     );
   }
 
@@ -3527,8 +3614,8 @@ export class MapComponent implements OnInit {
         },
         (error) =>
           this.showErrorLogAndSnackBar(
-            'Error getting all trails from the server. Is the server running?'
-          )
+            'Error getting all trails from the server. Is the server running?',
+          ),
       );
   }
 
@@ -3580,15 +3667,15 @@ export class MapComponent implements OnInit {
         extent[1],
         extent[2],
         extent[3],
-        this.showAisData
+        this.showAisData,
       )
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(
         (aisDataJsonArray) => this.processAisData(aisDataJsonArray),
         (error) =>
           this.showErrorLogAndSnackBar(
-            'Error updating AIS data from the server. Is the server running?'
-          )
+            'Error updating AIS data from the server. Is the server running?',
+          ),
       );
   }
 
@@ -3615,6 +3702,7 @@ export class MapComponent implements OnInit {
 
     const point = new Point(olProj.fromLonLat([ship.longitude, ship.latitude]));
     let feature: any = new Feature({
+      // @ts-ignore
       geometry: point,
     });
 
@@ -3626,7 +3714,7 @@ export class MapComponent implements OnInit {
     this.AisLabelFeatures.addFeature(feature);
 
     this.aisLabelFeatureLayer.setVisible(
-      Globals.showAircraftLabel && this.OLMap.getView().getZoom() > 11.5
+      Globals.showAircraftLabel && this.OLMap.getView().getZoom() > 11.5,
     );
 
     if (
@@ -3636,6 +3724,7 @@ export class MapComponent implements OnInit {
       ship.dimension != null
     ) {
       var shapeFeature: any = new Feature({
+        // @ts-ignore
         geometry: Ship.createShipOutlineGeometry(ship),
       });
       shapeFeature.ship = ship;
@@ -3663,7 +3752,7 @@ export class MapComponent implements OnInit {
   private toggleDarkStaticFeatures(darkStaticFeatures: boolean) {
     this.darkStaticFeatures = darkStaticFeatures;
     this.createRangeRingsAndSitePos(
-      Globals.DevicePosition ? Globals.DevicePosition : Globals.SitePosition
+      Globals.DevicePosition ? Globals.DevicePosition : Globals.SitePosition,
     );
   }
 
@@ -3714,7 +3803,7 @@ export class MapComponent implements OnInit {
       this.updatePlanesFromServer(
         this.selectedFeederUpdate,
         this.showIss,
-        this.showOnlyMilitary
+        this.showOnlyMilitary,
       );
 
       // Aktualisiere Daten des markierten Flugzeugs
@@ -3748,7 +3837,7 @@ export class MapComponent implements OnInit {
     this.updatePlanesFromServer(
       this.selectedFeederUpdate,
       this.showIss,
-      this.showOnlyMilitary
+      this.showOnlyMilitary,
     );
 
     // Aktualisiere Daten des markierten Flugzeugs
@@ -3782,7 +3871,7 @@ export class MapComponent implements OnInit {
       this.updatePlanesFromServer(
         this.selectedFeederUpdate,
         this.showIss,
-        this.showOnlyMilitary
+        this.showOnlyMilitary,
       );
 
       // Aktualisiere Daten des markierten Flugzeugs
@@ -3800,7 +3889,7 @@ export class MapComponent implements OnInit {
       this.updatePlanesFromServer(
         this.selectedFeederUpdate,
         this.showIss,
-        this.showOnlyMilitary
+        this.showOnlyMilitary,
       );
 
       // Aktualisiere Daten des markierten Flugzeugs
@@ -3861,8 +3950,8 @@ export class MapComponent implements OnInit {
         (outlineDataJson) => this.processActualRangeOutline(outlineDataJson),
         (error) =>
           this.showErrorLogAndSnackBar(
-            'Error updating actual range outline from the server. Is the server running?'
-          )
+            'Error updating actual range outline from the server. Is the server running?',
+          ),
       );
   }
 
@@ -3922,17 +4011,17 @@ export class MapComponent implements OnInit {
     this.centerMapAndSavePosition(
       addressCoordinates[1],
       addressCoordinates[0],
-      12
+      12,
     );
   }
 
   private centerMapAndSavePosition(
     long: number,
     lat: number,
-    zoomLevel: number
+    zoomLevel: number,
   ) {
     this.OLMap.getView().setCenter(
-      olProj.transform([long, lat], 'EPSG:4326', 'EPSG:3857')
+      olProj.transform([long, lat], 'EPSG:4326', 'EPSG:3857'),
     );
     this.OLMap.getView().setZoom(zoomLevel);
   }
@@ -3943,10 +4032,13 @@ export class MapComponent implements OnInit {
       .getSource()!
       .getFeatures();
 
-    const styleMap = this.listFeeder.reduce((map, feeder) => {
-      map[feeder.name] = feeder.styleFeederPoint;
-      return map;
-    }, {} as Record<string, any>);
+    const styleMap = this.listFeeder.reduce(
+      (map, feeder) => {
+        map[feeder.name] = feeder.styleFeederPoint;
+        return map;
+      },
+      {} as Record<string, any>,
+    );
 
     outlineDataFeatures.forEach((feature) => {
       if (feature.name == 'OutlineDataPoint' && feature.feeder) {
@@ -3971,7 +4063,7 @@ export class MapComponent implements OnInit {
           true,
           false,
           false,
-          false
+          false,
         );
         feature.setStyle(
           new Style({
@@ -3979,7 +4071,7 @@ export class MapComponent implements OnInit {
               radius: 2.5,
               fill: new Fill({ color }),
             }),
-          })
+          }),
         );
       }
     });
@@ -4026,7 +4118,7 @@ export class MapComponent implements OnInit {
           color: [0, 0, 0, 0.1],
         }),
       }),
-      undefined
+      undefined,
     );
     this.layers.push(this.dayNightVectorLayer);
     this.initUpdateDayNightLine();
@@ -4052,5 +4144,19 @@ export class MapComponent implements OnInit {
       : this.resetAllDrawnCircles();
 
     if (this.showRoute) this.updateShowRoute();
+  }
+
+  public removeOutlineDataPoint() {
+    const angleToSite = this.outlineDataPoint.angleToSite;
+    if (angleToSite == undefined) return;
+
+    this.serverService
+      .deleteRangeOutlinePoint(this.selectedFeederUpdate, angleToSite)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe();
+
+    this.fetchActualOutline();
+
+    this.outlineDataPoint = undefined;
   }
 }

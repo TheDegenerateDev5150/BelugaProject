@@ -15,55 +15,55 @@ export class Storage {
   static setDefaultSettingsValues() {
     this.savePropertyInLocalStorage(
       'aircraftLabels',
-      this.getPropertyFromLocalStorage('aircraftLabels', false)
+      this.getPropertyFromLocalStorage('aircraftLabels', false),
     );
     this.savePropertyInLocalStorage(
       'airportLabels',
-      this.getPropertyFromLocalStorage('airportLabels', true)
+      this.getPropertyFromLocalStorage('airportLabels', true),
     );
     this.savePropertyInLocalStorage(
       'ISS',
-      this.getPropertyFromLocalStorage('ISS', true)
+      this.getPropertyFromLocalStorage('ISS', true),
     );
     this.savePropertyInLocalStorage(
       'pomdFeature',
-      this.getPropertyFromLocalStorage('pomdFeature', false)
+      this.getPropertyFromLocalStorage('pomdFeature', false),
     );
     this.savePropertyInLocalStorage(
       'devicePosForCalc',
-      this.getPropertyFromLocalStorage('devicePosForCalc', false)
+      this.getPropertyFromLocalStorage('devicePosForCalc', false),
     );
     this.savePropertyInLocalStorage(
       'rainViewerRadar',
-      this.getPropertyFromLocalStorage('rainViewerRadar', false)
+      this.getPropertyFromLocalStorage('rainViewerRadar', false),
     );
     this.savePropertyInLocalStorage(
       'rainViewerForecast',
-      this.getPropertyFromLocalStorage('rainViewerForecast', false)
+      this.getPropertyFromLocalStorage('rainViewerForecast', false),
     );
     this.savePropertyInLocalStorage(
       'aircraftPositions',
-      this.getPropertyFromLocalStorage('aircraftPositions', true)
+      this.getPropertyFromLocalStorage('aircraftPositions', true),
     );
     this.savePropertyInLocalStorage(
       'dimMap',
-      this.getPropertyFromLocalStorage('dimMap', true)
+      this.getPropertyFromLocalStorage('dimMap', true),
     );
     this.savePropertyInLocalStorage(
       'darkStaticFeatures',
-      this.getPropertyFromLocalStorage('darkStaticFeatures', true)
+      this.getPropertyFromLocalStorage('darkStaticFeatures', true),
     );
     this.savePropertyInLocalStorage(
       'showAltitudeChart',
-      this.getPropertyFromLocalStorage('showAltitudeChart', true)
+      this.getPropertyFromLocalStorage('showAltitudeChart', true),
     );
     this.savePropertyInLocalStorage(
       'showOnlyMilitary',
-      this.getPropertyFromLocalStorage('showOnlyMilitary', false)
+      this.getPropertyFromLocalStorage('showOnlyMilitary', false),
     );
     this.savePropertyInLocalStorage(
       'coordinatesDevicePosition',
-      this.getPropertyFromLocalStorage('coordinatesDevicePosition', null)
+      this.getPropertyFromLocalStorage('coordinatesDevicePosition', null),
     );
   }
 }

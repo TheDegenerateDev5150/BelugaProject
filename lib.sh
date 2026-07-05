@@ -27,7 +27,7 @@ path_flightroute_create_csv_script="assets/scripts/$flightroute_create_csv_scrip
 
 aircraft_mictronics_database_zipfilename="indexedDB.zip"
 aircraft_mictronics_database_filename="indexedDB"
-aircraft_mictronics_database_url="https://www.mictronics.de/aircraft-database/$aircraft_mictronics_database_filename.php"
+aircraft_mictronics_database_url="https://raw.githubusercontent.com/Mictronics/aircraft-database/main/$aircraft_mictronics_database_zipfilename"
 json_to_csv_script_filename="json_to_csv.py"
 path_json_to_csv_script="assets/scripts/$json_to_csv_script_filename"
 aircraft_mictronics_database_aircrafts_json="aircrafts.json"
@@ -299,6 +299,7 @@ _download_aircraft_database() {
   echo "-> Download $aircraft_database_filename from Opensky-Network. Done."
 
   echo "Copy $aircraft_database_filename to $path_db_content ..."
+  docker exec -ti $container_name_db bash -c "[ -d $path_db_content ] || mkdir -p $path_db_content"
   docker exec -ti $container_name_db bash -c "cp $aircraft_database_filename $path_db_content"
   echo "-> Copy $aircraft_database_filename to $path_db_content. Done."
 }
@@ -309,6 +310,7 @@ _download_airport_database() {
   echo "-> Download $airport_database_filename from OurAirports. Done."
 
   echo "Copy $airport_database_filename to $path_db_content ..."
+  docker exec -ti $container_name_db bash -c "[ -d $path_db_content ] || mkdir -p $path_db_content"
   docker exec -ti $container_name_db bash -c "cp $airport_database_filename $path_db_content"
   echo "-> Copy $airport_database_filename to $path_db_content. Done."
 }
@@ -316,13 +318,14 @@ _download_airport_database() {
 _download_mictronics_aircraft_database() {
   echo "Download $aircraft_mictronics_database_filename from Mictronics ..."
   docker exec -ti $container_name_db bash -c "wget $aircraft_mictronics_database_url -O $aircraft_mictronics_database_zipfilename"
-  docker exec -ti $container_name_db bash -c "unzip $aircraft_mictronics_database_zipfilename -o -j"
+  docker exec -ti $container_name_db bash -c "unzip -o $aircraft_mictronics_database_zipfilename"
   echo "-> Download $aircraft_mictronics_database_filename from Mictronics. Done."
 
   _copy_convert_mictronics_jsons_to_csv_script_to_container
   _convert_mictronics_database_to_csv
 
   echo "Copy $aircraft_mictronics_database_aircrafts_csv, $aircraft_mictronics_database_operators_csv, $aircraft_mictronics_database_types_csv to $path_db_content ..."
+  docker exec -ti $container_name_db bash -c "[ -d $path_db_content ] || mkdir -p $path_db_content"
   docker exec -ti $container_name_db bash -c "cp $aircraft_mictronics_database_aircrafts_csv $path_db_content"
   docker exec -ti $container_name_db bash -c "cp $aircraft_mictronics_database_operators_csv $path_db_content"
   docker exec -ti $container_name_db bash -c "cp $aircraft_mictronics_database_types_csv $path_db_content"
@@ -339,6 +342,7 @@ _download_flightroute_database() {
   _convert_flightroute_database_to_csv
 
   echo "Copy $flightroute_database_filename to $path_db_content ..."
+  docker exec -ti $container_name_db bash -c "[ -d $path_db_content ] || mkdir -p $path_db_content"
   docker exec -ti $container_name_db bash -c "cp $flightroute_database_filename $path_db_content"
   echo "-> Copy $flightroute_database_filename to $path_db_content. Done."
 }

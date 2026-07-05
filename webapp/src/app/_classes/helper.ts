@@ -13,7 +13,7 @@ export class Helper {
   static makeGeodesicCircle(
     center: number[],
     radius: number,
-    points: number
+    points: number,
   ): any {
     const angularDistance = radius / 6378137.0;
     const lon1 = (center[0] * Math.PI) / 180.0;
@@ -25,13 +25,13 @@ export class Helper {
 
       let lat2 = Math.asin(
         Math.sin(lat1) * Math.cos(angularDistance) +
-          Math.cos(lat1) * Math.sin(angularDistance) * Math.cos(bearing)
+          Math.cos(lat1) * Math.sin(angularDistance) * Math.cos(bearing),
       );
       let lon2 =
         lon1 +
         Math.atan2(
           Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(lat1),
-          Math.cos(angularDistance) - Math.sin(lat1) * Math.sin(lat2)
+          Math.cos(angularDistance) - Math.sin(lat1) * Math.sin(lat2),
         );
 
       lat2 = (lat2 * 180.0) / Math.PI;
@@ -64,7 +64,7 @@ export class Helper {
     lat1: number,
     lon1: number,
     lat2: number,
-    lon2: number
+    lon2: number,
   ): number {
     const EarthRadius = 6378137.0; //meters
     const lat1r = (lat1 * Math.PI) / 180.0; // lat1 in radians
@@ -103,7 +103,7 @@ export class Helper {
     lat1: number,
     lon1: number,
     lat2: number,
-    lon2: number
+    lon2: number,
   ): number {
     const lat1r = (lat1 * Math.PI) / 180.0; // lat1 in radians
     const lat2r = (lat2 * Math.PI) / 180.0; // lat2 in radians
@@ -144,7 +144,7 @@ export class Helper {
     lat1: number,
     lon1: number,
     track: number,
-    distance: number
+    distance: number,
   ): [number, number] {
     const EarthRadius = 6378.137; // Kilometer
     const lat1r = (lat1 * Math.PI) / 180.0; // lat1 in radians
@@ -154,14 +154,14 @@ export class Helper {
     // Berechne lat2
     const lat2r = Math.asin(
       Math.sin(lat1r) * Math.cos(distance / EarthRadius) +
-        Math.cos(lat1r) * Math.sin(distance / EarthRadius) * Math.cos(trackr)
+        Math.cos(lat1r) * Math.sin(distance / EarthRadius) * Math.cos(trackr),
     );
 
     let lon2r =
       lon1r +
       Math.atan2(
         Math.sin(trackr) * Math.sin(distance / EarthRadius) * Math.cos(lat1r),
-        Math.cos(distance / EarthRadius) - Math.sin(lat1r) * Math.sin(lat2r)
+        Math.cos(distance / EarthRadius) - Math.sin(lat1r) * Math.sin(lat2r),
       );
 
     // Longitude normalisieren in den Bereich −180…+180
@@ -188,7 +188,7 @@ export class Helper {
   static getRemainingDistance(
     distance: number,
     theta: number,
-    track: number
+    track: number,
   ): number {
     // Berechne Winkel Alpha, das ist die Winkel-Differenz zwischen Theta und Track
     const alpha = Math.abs(theta - track);
@@ -212,7 +212,7 @@ export class Helper {
   static getMinimumDistance(
     distance: number,
     theta: number,
-    track: number
+    track: number,
   ): number {
     // Berechne Winkel Alpha, das ist die Winkel-Differenz zwischen Theta und Track
     const alpha = Math.abs(theta - track);

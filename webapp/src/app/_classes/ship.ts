@@ -403,7 +403,7 @@ export class Ship {
       else
         return new Circle(
           olProj.fromLonLat(coordinate),
-          Math.max(to_bow, to_stern)
+          Math.max(to_bow, to_stern),
         );
     }
 
@@ -419,13 +419,13 @@ export class Ship {
     const Dmid = Ship.calcMove(
       C,
       deltaStarboard,
-      0.5 * (to_starboard + to_port)
+      0.5 * (to_starboard + to_port),
     );
     const D = Ship.calcMove(Dmid, deltaBow, 0.2 * (to_bow + to_stern));
     const E = Ship.calcMove(C, deltaStarboard, to_starboard + to_port);
 
     let shipOutlineCoords = [A, B, C, D, E, A].map((coord) =>
-      olProj.fromLonLat(coord)
+      olProj.fromLonLat(coord),
     );
     return new Polygon([shipOutlineCoords]);
   }
@@ -441,7 +441,7 @@ export class Ship {
     let lat2 = Math.asin(sinLat2);
     let deltaLon = Math.atan2(
       Math.sin(rheading) * Ship.sin100R * cosLat,
-      Ship.cos100R - sinLat * sinLat2
+      Ship.cos100R - sinLat * sinLat2,
     );
 
     return [

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Aircraft } from '../../_classes/aircraft';
 import { Globals } from 'src/app/_common/globals';
@@ -34,7 +33,7 @@ export class ServerService {
     fetchRemote: string | null,
     showIss: boolean,
     markedHex: string | null,
-    showOnlyMilitary: boolean
+    showOnlyMilitary: boolean,
   ): Observable<Aircraft[]> {
     // Initialiere Params-Objekt
     let params = new HttpParams();
@@ -69,7 +68,7 @@ export class ServerService {
     lamin: number,
     lomax: number,
     lamax: number,
-    zoomLevel: number
+    zoomLevel: number,
   ): Observable<any> {
     // Initialiere Params-Objekt
     let params = new HttpParams();
@@ -95,7 +94,7 @@ export class ServerService {
   getAllAircraftData(
     hex: string,
     registration: string,
-    isFromRemote: boolean
+    isFromRemote: boolean,
   ): Observable<any> {
     // Initialiere Params-Objekt
     let params = new HttpParams();
@@ -121,7 +120,7 @@ export class ServerService {
   getTrail(
     hex: string,
     selectedFeeder: any,
-    fetchRemote: string | null
+    fetchRemote: string | null,
   ): Observable<any> {
     // Initialiere Params-Objekt
     let params = new HttpParams();
@@ -171,7 +170,7 @@ export class ServerService {
     lamin: number,
     lomax: number,
     lamax: number,
-    enable: boolean
+    enable: boolean,
   ): Observable<any> {
     // Initialiere Params-Objekt
     let params = new HttpParams();
@@ -211,6 +210,19 @@ export class ServerService {
     params = params.append('inputPlace', inputPlace.toString());
 
     return this.httpClient.get<any>(Globals.urlGetLocationFromPlaceInput, {
+      params: params,
+    });
+  }
+
+  deleteRangeOutlinePoint(
+    selectedFeeder: any,
+    angleToSite: number,
+  ): Observable<any> {
+    let params = new HttpParams();
+    params = params.append('selectedFeeder', selectedFeeder.toString());
+    params = params.append('angleToSite', angleToSite.toString());
+
+    return this.httpClient.delete<any>(Globals.urlDeleteRangeOutlinePoint, {
       params: params,
     });
   }

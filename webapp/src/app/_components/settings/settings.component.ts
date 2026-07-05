@@ -108,6 +108,9 @@ export class SettingsComponent implements OnInit {
   // Boolean, ob Rainviewer (Rain) Daten angezeigt werden sollen
   rainViewerRain: boolean = false;
 
+  // Boolean, ob DWD (Rain) Daten angezeigt werden sollen
+  dwdRain: boolean = false;
+
   // Boolean, ob Rainviewer Forecast (Rain) Daten angezeigt werden sollen
   rainViewerRainForecast: boolean = false;
 
@@ -138,7 +141,7 @@ export class SettingsComponent implements OnInit {
   // Boolean, ob Altitude Chart angezeigt werden soll
   showAltitudeChart: boolean = Storage.getPropertyFromLocalStorage(
     'showAltitudeChart',
-    true
+    true,
   );
 
   // Boolean, ob Trail-Data angezeigt werden soll
@@ -166,31 +169,29 @@ export class SettingsComponent implements OnInit {
     public settingsService: SettingsService,
     public breakpointObserver: BreakpointObserver,
     public serverService: ServerService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
   ) {}
 
   setSettingsFromLocalStorage() {
     this.toggleAircraftLabels(
-      Storage.getPropertyFromLocalStorage('aircraftLabels', false)
+      Storage.getPropertyFromLocalStorage('aircraftLabels', false),
     );
 
     this.toggleAircraftPositions(
-      Storage.getPropertyFromLocalStorage('aircraftPositions', true)
+      Storage.getPropertyFromLocalStorage('aircraftPositions', true),
     );
 
     this.toggleAirports(
-      Storage.getPropertyFromLocalStorage('airportLabels', true)
+      Storage.getPropertyFromLocalStorage('airportLabels', true),
     );
 
-    //this.toggleDarkMode(Storage.getPropertyFromLocalStorage('darkMode', false));
-
     this.toggleDarkStaticFeatures(
-      Storage.getPropertyFromLocalStorage('darkStaticFeatures', true)
+      Storage.getPropertyFromLocalStorage('darkStaticFeatures', true),
     );
 
     this.toggleDevicePositionAsBasis(
       Storage.getPropertyFromLocalStorage('devicePosForCalc', false),
-      true
+      true,
     );
 
     this.toggleDimMap(Storage.getPropertyFromLocalStorage('dimMap', true));
@@ -198,65 +199,67 @@ export class SettingsComponent implements OnInit {
     this.toggleIss(Storage.getPropertyFromLocalStorage('ISS', true));
 
     this.togglePOMDPoint(
-      Storage.getPropertyFromLocalStorage('pomdFeature', false)
+      Storage.getPropertyFromLocalStorage('pomdFeature', false),
     );
 
     this.toggleRainViewerRain(
-      Storage.getPropertyFromLocalStorage('rainViewerRadar', false)
+      Storage.getPropertyFromLocalStorage('rainViewerRadar', false),
     );
 
+    this.toggleDwdRain(Storage.getPropertyFromLocalStorage('dwdRadar', false));
+
     this.toggleRainViewerRainForecast(
-      Storage.getPropertyFromLocalStorage('rainViewerForecast', false)
+      Storage.getPropertyFromLocalStorage('rainViewerForecast', false),
     );
 
     this.toggleAltitudeChart(
-      Storage.getPropertyFromLocalStorage('showAltitudeChart', true)
+      Storage.getPropertyFromLocalStorage('showAltitudeChart', true),
     );
 
     this.toggleShowOnlyMilitaryPlanes(
-      Storage.getPropertyFromLocalStorage('showOnlyMilitary', false)
+      Storage.getPropertyFromLocalStorage('showOnlyMilitary', false),
     );
 
     this.sliderGlobalIconSizeValue = Storage.getPropertyFromLocalStorage(
       'globalIconSize',
-      1.6
+      1.6,
     );
     this.settingsService.setGlobalIconSize(+this.sliderGlobalIconSizeValue);
 
     this.sliderSmallIconSizeValue = Storage.getPropertyFromLocalStorage(
       'smallIconSize',
-      1.0
+      1.0,
     );
     this.settingsService.setSmallIconSize(+this.sliderSmallIconSizeValue);
 
     this.toggleOpenskyPlanes(
-      Storage.getPropertyFromLocalStorage('showOpenskyPlanes', false)
+      Storage.getPropertyFromLocalStorage('showOpenskyPlanes', false),
     );
 
     this.toggleAirplanesLivePlanes(
-      Storage.getPropertyFromLocalStorage('showAirplanesLive', false)
+      Storage.getPropertyFromLocalStorage('showAirplanesLive', false),
     );
 
     this.toggleAisData(
-      Storage.getPropertyFromLocalStorage('showAisData', false)
+      Storage.getPropertyFromLocalStorage('showAisData', false),
     );
 
     this.sliderAisOutlinesZoomValue = Storage.getPropertyFromLocalStorage(
       'aisOutlineMinZoom',
-      11.5
+      11.5,
     );
     this.settingsService.setAisOutlineMinZoom(+this.sliderAisOutlinesZoomValue);
 
     this.toggleActualRangeOutline(
-      Storage.getPropertyFromLocalStorage('showActualRangeOutline', true)
+      Storage.getPropertyFromLocalStorage('showActualRangeOutline', true),
     );
 
     this.toggleDayNightLine(
-      Storage.getPropertyFromLocalStorage('dayNightLine', true)
+      Storage.getPropertyFromLocalStorage('dayNightLine', true),
     );
 
     this.toggleRouteToDestination(
-      Storage.getPropertyFromLocalStorage('routeToDestination', false)
+      Storage.getPropertyFromLocalStorage('routeToDestination', false),
     );
   }
 
@@ -370,7 +373,7 @@ export class SettingsComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'aircraftLabels',
-      this.showAircraftLabels
+      this.showAircraftLabels,
     );
 
     // Kontaktiere Map-Component und übergebe showAircraftLabels-Boolean
@@ -386,13 +389,13 @@ export class SettingsComponent implements OnInit {
     // (a little hacky)
     if (this.markOutlineDataByHeight) {
       this.toggleMarkOutlineDataByHeight(
-        new MatSlideToggleChange(event.source, !event.checked)
+        new MatSlideToggleChange(event.source, !event.checked),
       );
     }
 
     // Kontaktiere Map-Component und übergebe boolean
     this.settingsService.toggleMarkOutlineDataByFeeder(
-      this.markOutlineDataByFeeder
+      this.markOutlineDataByFeeder,
     );
   }
 
@@ -405,13 +408,13 @@ export class SettingsComponent implements OnInit {
     // (a little hacky)
     if (this.markOutlineDataByFeeder) {
       this.toggleMarkOutlineDataByFeeder(
-        new MatSlideToggleChange(event.source, !event.checked)
+        new MatSlideToggleChange(event.source, !event.checked),
       );
     }
 
     // Kontaktiere Map-Component und übergebe boolean
     this.settingsService.toggleMarkOutlineDataByHeight(
-      this.markOutlineDataByHeight
+      this.markOutlineDataByHeight,
     );
   }
 
@@ -420,7 +423,7 @@ export class SettingsComponent implements OnInit {
    */
   selectPlanesByFeeder() {
     let selectedFeederNames = this.getNamesOfSelectedFeeder(
-      this.selectedFeeder
+      this.selectedFeeder,
     );
 
     // Kontaktiere Map-Component und übergebe selectFeeder-Namen
@@ -466,7 +469,7 @@ export class SettingsComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'showOpenskyPlanes',
-      this.showOpenskyPlanes
+      this.showOpenskyPlanes,
     );
 
     // Kontaktiere Map-Component und übergebe showOpenskyPlanes-Boolean
@@ -559,23 +562,23 @@ export class SettingsComponent implements OnInit {
 
     if (this.devicePositionAsBasis && Globals.DevicePosition === undefined) {
       console.log(
-        'Device position needs to be set before enabling this toggle!'
+        'Device position needs to be set before enabling this toggle!',
       );
       this.openSnackbar(
-        'Device position needs to be set before enabling this toggle'
+        'Device position needs to be set before enabling this toggle',
       );
       this.devicePositionAsBasis = false;
       return;
     } else {
       // Kontaktiere Map-Component und übergebe devicePositionAsBasis-Boolean
       this.settingsService.toggleDevicePositionAsBasis(
-        this.devicePositionAsBasis
+        this.devicePositionAsBasis,
       );
     }
 
     Storage.savePropertyInLocalStorage(
       'devicePosForCalc',
-      this.devicePositionAsBasis
+      this.devicePositionAsBasis,
     );
   }
 
@@ -603,6 +606,19 @@ export class SettingsComponent implements OnInit {
   }
 
   /**
+   * Toggle DWD (Rain)
+   * @param checked: boolean
+   */
+  toggleDwdRain(checked: boolean) {
+    this.dwdRain = checked;
+
+    Storage.savePropertyInLocalStorage('dwdRadar', this.dwdRain);
+
+    // Kontaktiere Map-Component und übergebe DWD (Rain) Boolean
+    this.settingsService.toggleDwdRain(this.dwdRain);
+  }
+
+  /**
    * Toggle Rainviewer Forecast(Rain)
    * @param checked: boolean
    */
@@ -611,12 +627,12 @@ export class SettingsComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'rainViewerForecast',
-      this.rainViewerRainForecast
+      this.rainViewerRainForecast,
     );
 
     // Kontaktiere Map-Component und übergebe Rainviewer Forecast (Rain) Boolean
     this.settingsService.toggleRainViewerRainForecast(
-      this.rainViewerRainForecast
+      this.rainViewerRainForecast,
     );
   }
 
@@ -629,7 +645,7 @@ export class SettingsComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'aircraftPositions',
-      this.showAircraftPositions
+      this.showAircraftPositions,
     );
 
     // Kontaktiere Map-Component und übergebe showAircraftPositions-Boolean
@@ -682,7 +698,7 @@ export class SettingsComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'darkStaticFeatures',
-      this.darkStaticFeatures
+      this.darkStaticFeatures,
     );
 
     // Kontaktiere Map-Component und übergebe darkStaticFeatures-Boolean
@@ -694,7 +710,7 @@ export class SettingsComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'globalIconSize',
-      this.sliderGlobalIconSizeValue
+      this.sliderGlobalIconSizeValue,
     );
 
     // Kontaktiere Map-Component
@@ -706,7 +722,7 @@ export class SettingsComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'smallIconSize',
-      this.sliderSmallIconSizeValue
+      this.sliderSmallIconSizeValue,
     );
 
     // Kontaktiere Map-Component
@@ -718,7 +734,7 @@ export class SettingsComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'aisOutlineMinZoom',
-      this.sliderAisOutlinesZoomValue
+      this.sliderAisOutlinesZoomValue,
     );
 
     // Kontaktiere Map-Component
@@ -732,15 +748,15 @@ export class SettingsComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'globalIconSize',
-      this.sliderGlobalIconSizeValue
+      this.sliderGlobalIconSizeValue,
     );
     Storage.savePropertyInLocalStorage(
       'smallIconSize',
-      this.sliderSmallIconSizeValue
+      this.sliderSmallIconSizeValue,
     );
     Storage.savePropertyInLocalStorage(
       'aisOutlineMinZoom',
-      this.sliderAisOutlinesZoomValue
+      this.sliderAisOutlinesZoomValue,
     );
 
     // Kontaktiere Map-Component
@@ -754,7 +770,7 @@ export class SettingsComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'showAltitudeChart',
-      this.showAltitudeChart
+      this.showAltitudeChart,
     );
 
     // Kontaktiere Map-Component und übergebe showAltitudeChart-Boolean
@@ -766,7 +782,7 @@ export class SettingsComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'showOnlyMilitary',
-      this.showOnlyMilitaryPlanes
+      this.showOnlyMilitaryPlanes,
     );
 
     // Kontaktiere Map-Component und übergebe showOnlyMilitaryPlanes-Boolean
@@ -784,12 +800,12 @@ export class SettingsComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'showAirplanesLive',
-      this.showAirplanesLivePlanes
+      this.showAirplanesLivePlanes,
     );
 
     // Kontaktiere Map-Component und übergebe showAirplanesLivePlanes-Boolean
     this.settingsService.toggleAirplanesLivePlanes(
-      this.showAirplanesLivePlanes
+      this.showAirplanesLivePlanes,
     );
   }
 
@@ -807,7 +823,7 @@ export class SettingsComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'showActualRangeOutline',
-      this.showActualRangeOutline
+      this.showActualRangeOutline,
     );
 
     // Kontaktiere Map-Component und übergebe showActualRangeOutline-Boolean
@@ -827,7 +843,7 @@ export class SettingsComponent implements OnInit {
 
     Storage.savePropertyInLocalStorage(
       'routeToDestination',
-      this.showRouteToDestination
+      this.showRouteToDestination,
     );
 
     this.settingsService.toggleRouteToDestination(this.showRouteToDestination);

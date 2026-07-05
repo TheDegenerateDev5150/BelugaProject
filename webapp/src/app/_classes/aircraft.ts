@@ -238,7 +238,7 @@ export class Aircraft {
     emergency: any,
     navModes: any,
     sourceCurrentFeeder: any,
-    sendWithPos: any
+    sendWithPos: any,
   ) {
     this.hex = hex;
     this.latitude = latitude;
@@ -336,7 +336,7 @@ export class Aircraft {
       aircraftJSONElement.emergency,
       aircraftJSONElement.navModes,
       aircraftJSONElement.sourceCurrentFeeder,
-      aircraftJSONElement.sendWithPos
+      aircraftJSONElement.sendWithPos,
     );
   }
 
@@ -499,7 +499,7 @@ export class Aircraft {
           Globals.DevicePosition[1],
           Globals.DevicePosition[0],
           this.track,
-          this.speed
+          this.speed,
         );
       } else {
         // Nutze Antennen-Position für Distanz-Berechnungen
@@ -509,7 +509,7 @@ export class Aircraft {
           Globals.latFeeder,
           Globals.lonFeeder,
           this.track,
-          this.speed
+          this.speed,
         );
       }
     }
@@ -523,7 +523,7 @@ export class Aircraft {
         this.latitude,
         this.longitude,
         Globals.DevicePosition[1],
-        Globals.DevicePosition[0]
+        Globals.DevicePosition[0],
       );
     } else {
       this.distanceDevicePos = null;
@@ -567,15 +567,15 @@ export class Aircraft {
         (this.pngScale < 0.39
           ? this.pngScale * Globals.smallScaleFactorIcons
           : this.pngScale) *
-        (Globals.globalScaleFactorIcons / 1.3)
+        (Globals.globalScaleFactorIcons / 1.3),
     );
     this.glMarker.set(
       'sx',
-      Markers.getSpriteX(this.pngId) * Globals.glIconSize
+      Markers.getSpriteX(this.pngId) * Globals.glIconSize,
     );
     this.glMarker.set(
       'sy',
-      Markers.getSpriteY(this.pngId) * Globals.glIconSize
+      Markers.getSpriteY(this.pngId) * Globals.glIconSize,
     );
 
     if (!this.glMarker.visible) {
@@ -620,7 +620,7 @@ export class Aircraft {
       // Hole Type-Bezeichner und Scale als Array [typeDesignator, scale] (ehem. basemarker)
       this.typeDesignatorAndScaleArray = Markers.getTypeDesignatorAndScale(
         this.category,
-        this.type
+        this.type,
       );
 
       // Berechne Scale der Icons
@@ -641,13 +641,29 @@ export class Aircraft {
         // Informationen für PNG für WebGL
         this.pngId = shapesMapData[1];
         this.pngScale = shapesMapData[2];
-
       } else {
-        console.log("Fatal Error: shapeDesignator <<" + this.shapeDesignator + ">> does not exist in database table shape_data (column <<designator>>)!");
-        console.log("Rquested type is <<" + this.type + ">>, requested category is <<" + this.category + ")");
-        console.log("Check shapeDesignator <<" + this.shapeDesignator + ">> in database tables map_type_to_shape_date (for type <<" + this.type + ">> and/or map_cat_to_shape_data (for category <<" + this.category + ">>)");
+        console.log(
+          'Fatal Error: shapeDesignator <<' +
+            this.shapeDesignator +
+            '>> does not exist in database table shape_data (column <<designator>>)!',
+        );
+        console.log(
+          'Rquested type is <<' +
+            this.type +
+            '>>, requested category is <<' +
+            this.category +
+            ')',
+        );
+        console.log(
+          'Check shapeDesignator <<' +
+            this.shapeDesignator +
+            '>> in database tables map_type_to_shape_date (for type <<' +
+            this.type +
+            '>> and/or map_cat_to_shape_data (for category <<' +
+            this.category +
+            '>>)',
+        );
       }
-      
     }
   }
 
@@ -684,7 +700,7 @@ export class Aircraft {
       false,
       this.isMarked,
       false,
-      false
+      false,
     );
 
     this.glMarker.set('r', rgb[0]);
@@ -700,7 +716,7 @@ export class Aircraft {
     if (!this.pomdMarker) {
       // Erstelle Feature
       this.pomdMarker = new Feature(
-        new Point(olProj.fromLonLat([this.pomdLongitude, this.pomdLatitude]))
+        new Point(olProj.fromLonLat([this.pomdLongitude, this.pomdLatitude])),
       );
       this.pomdMarker.hex = this.hex;
       this.pomdMarker.name = 'pomd_point';
@@ -713,7 +729,7 @@ export class Aircraft {
     }
     if (moved) {
       this.pomdMarker.setGeometry(
-        new Point(olProj.fromLonLat([this.pomdLongitude, this.pomdLatitude]))
+        new Point(olProj.fromLonLat([this.pomdLongitude, this.pomdLatitude])),
       );
     }
   }
@@ -803,7 +819,7 @@ export class Aircraft {
         timestamp,
         track,
         roll,
-        reenteredAircraft
+        reenteredAircraft,
       );
 
       this.updateAltitudeData(timestamp, reenteredAircraft, altitude);
@@ -879,7 +895,7 @@ export class Aircraft {
             new Date().getTime(),
             this.track,
             this.roll,
-            false
+            false,
           );
         }
       } else {
@@ -891,7 +907,7 @@ export class Aircraft {
           new Date().getTime(),
           this.track,
           this.roll,
-          false
+          false,
         );
       }
 
@@ -959,31 +975,31 @@ export class Aircraft {
     lat2: number,
     lon2: number,
     heading: number,
-    speed: number
+    speed: number,
   ): void {
     let distance = Helper.getDistanceBetweenPositions(lat1, lon1, lat2, lon2);
     let theta = Helper.getAngleBetweenPositions(lat1, lon1, lat2, lon2);
     this.pomdRemainingKm = Helper.getRemainingDistance(
       distance,
       theta,
-      heading
+      heading,
     );
     this.pomdDistanceKm = Helper.getMinimumDistance(distance, theta, heading);
     [this.pomdLatitude, this.pomdLongitude] = Helper.getPosOfMinimumDistance(
       lat1,
       lon1,
       heading,
-      this.pomdRemainingKm
+      this.pomdRemainingKm,
     );
     this.pomdRemainingSeconds = Helper.getTimeForDistance(
       this.pomdRemainingKm,
-      speed
+      speed,
     );
     this.pomdDirection = Helper.getAngleBetweenPositions(
       lat2,
       lon2,
       this.pomdLatitude,
-      this.pomdLongitude
+      this.pomdLongitude,
     );
     let ETADate = Helper.addSeconds(this.pomdRemainingSeconds);
     this.pomdETA = ETADate.toLocaleTimeString('de-de');
@@ -1049,7 +1065,7 @@ export class Aircraft {
       coordinate: olProj.transform(
         [longitude, latitude],
         'EPSG:4326',
-        'EPSG:3857'
+        'EPSG:3857',
       ),
     });
   }
@@ -1061,7 +1077,7 @@ export class Aircraft {
     timestamp,
     track,
     roll,
-    isReentered
+    isReentered,
   ) {
     if (!this.track3d) {
       this.track3d = {
@@ -1079,7 +1095,7 @@ export class Aircraft {
         false,
         false,
         true,
-        isReentered
+        isReentered,
       ),
       timestamp: timestamp,
       track: track,
@@ -1110,6 +1126,7 @@ export class Aircraft {
     if (this.trackLinePointsAre180Crosspoints()) return;
 
     let featureLine = new Feature({
+      // @ts-ignore
       geometry: new LineString([
         this.trackLinePoints[this.trackLinePoints.length - 1].coordinate,
         this.trackLinePoints[this.trackLinePoints.length - 2].coordinate,
@@ -1133,7 +1150,7 @@ export class Aircraft {
         true,
         false,
         false,
-        false
+        false,
       );
 
       // Erstelle Style des Trailabschnittes
@@ -1159,7 +1176,7 @@ export class Aircraft {
       this.positionOrg[1],
       this.positionOrg[0],
       this.positionDest[1],
-      this.positionDest[0]
+      this.positionDest[0],
     );
 
     this.updateTravelledDistanceInKm();
@@ -1189,8 +1206,8 @@ export class Aircraft {
         this.positionDest[1],
         this.positionDest[0],
         this.latitude,
-        this.longitude
-      )
+        this.longitude,
+      ),
     ).toFixed(1);
 
     this.travelledDistanceInKm = (

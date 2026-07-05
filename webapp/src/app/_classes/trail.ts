@@ -71,7 +71,7 @@ export class Trail {
       coordinate: olProj.transform(
         [longitude, latitude],
         'EPSG:4326',
-        'EPSG:3857'
+        'EPSG:3857',
       ),
     });
   }
@@ -80,6 +80,7 @@ export class Trail {
     if (this.trackLinePointsAre180Crosspoints()) return;
 
     let featureLine = new Feature({
+      // @ts-ignore
       geometry: new LineString([
         this.trackLinePoints[this.trackLinePoints.length - 1].coordinate,
         this.trackLinePoints[this.trackLinePoints.length - 2].coordinate,
@@ -103,7 +104,7 @@ export class Trail {
         true,
         false,
         false,
-        false
+        false,
       );
 
       // Erstelle Style des Trailabschnittes

@@ -59,13 +59,13 @@ export type ChartOptions = {
         style({ transform: '{{translateTypeValue}}' }),
         animate(
           '200ms ease-out',
-          style({ transform: '{{translateTypeAxis}}(0)' })
+          style({ transform: '{{translateTypeAxis}}(0)' }),
         ),
       ]),
       transition(':leave', [
         animate(
           '200ms ease-out',
-          style({ transform: '{{translateTypeValue}}' })
+          style({ transform: '{{translateTypeValue}}' }),
         ),
       ]),
     ]),
@@ -119,7 +119,7 @@ export class InfoComponent implements OnInit, OnDestroy {
     public snackBar: MatSnackBar,
     private settingsService: SettingsService,
     private infoService: InfoService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
   ) {
     this.chartOptions = {
       series: [
@@ -379,7 +379,7 @@ export class InfoComponent implements OnInit, OnDestroy {
     if (this.aircraft?.altitude == undefined) {
       this.openSnackBar(
         'Current aircraft has no altitude. 3D view is not available',
-        'OK'
+        'OK',
       );
       return;
     }

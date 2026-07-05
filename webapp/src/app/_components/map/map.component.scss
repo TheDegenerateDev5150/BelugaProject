@@ -68,6 +68,13 @@ mat-card-header {
   display: ruby;
 }
 
+#outlineDataBin {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px;
+}
+
 ::ng-deep .mat-card-header-text {
   margin: 0 8px !important;
 }

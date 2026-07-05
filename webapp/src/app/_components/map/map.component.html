@@ -109,6 +109,13 @@
           style="color: #ffab40"
         >
           {{ outlineDataPoint.flightId }}
+
+          <mat-icon
+            id="outlineDataBin"
+            style="color: #ffab40"
+            (click)="removeOutlineDataPoint()"
+            >delete_forever</mat-icon
+          >
         </mat-card-title>
         <!-- hex -->
         <mat-card-subtitle

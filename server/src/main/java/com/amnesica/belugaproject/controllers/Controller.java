@@ -14,10 +14,7 @@ import com.amnesica.belugaproject.services.trails.SpacecraftTrailService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -287,5 +284,18 @@ public class Controller {
   List<Double> getCoordinatesFromPlace(
       @RequestParam(value = "inputPlace") String inputPlace) {
     return locationFinderService.getCoordinatesFromPlace(inputPlace);
+  }
+
+  /**
+   * Entfernt einen bestimmten Punkt aus der RangeOutline
+   *
+   * @param selectedFeeder String
+   * @param angleToSite    Integer
+   */
+  @DeleteMapping(value = "/deleteRangeOutlinePoint")
+  public void deleteRangeOutlinePoint(
+      @RequestParam(value = "selectedFeeder") String selectedFeeder,
+      @RequestParam(value = "angleToSite") Integer angleToSite) {
+    aircraftTrailService.removeOutlinePoint(selectedFeeder, angleToSite);
   }
 }

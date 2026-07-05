@@ -120,4 +120,15 @@ public class AircraftTrailServiceTests {
     assertEquals(2, actualOutline.size());
     assertFalse(actualOutline.contains(trailOutside));
   }
+
+  @Test
+  public void removeTrailPointByFeederNameAndAngle() {
+    List<AircraftTrail> actualOutline = aircraftTrailService.getActualOutlineFromLast24Hours(List.of("feeder1"));
+    assertEquals(2, actualOutline.size());
+
+    aircraftTrailService.removeOutlinePoint("feeder1", 180);
+
+    List<AircraftTrail> actualOutlineAfter = aircraftTrailService.getActualOutlineFromLast24Hours(List.of("feeder1"));
+    assertEquals(1, actualOutlineAfter.size());
+  }
 }

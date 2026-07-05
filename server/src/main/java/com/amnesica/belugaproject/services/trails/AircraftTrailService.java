@@ -227,6 +227,19 @@ public class AircraftTrailService {
     return maxTrailsPerAngle.values().stream().sorted(Comparator.comparing(TrailSuperclass::getAngleToSite))
         .collect(Collectors.toList());
   }
+
+  /**
+   * Entfernt einen bestimmten Outline-Punkt aus der actualOutlineMap-Map
+   *
+   * @param selectedFeeder String
+   * @param angleToSite    Integer
+   */
+  public void removeOutlinePoint(String selectedFeeder, Integer angleToSite) {
+    if (selectedFeeder == null || selectedFeeder.isEmpty() || angleToSite == null) return;
+
+    final Map<Integer, AircraftTrail> feederOutline = actualOutlineMap.get(selectedFeeder);
+    feederOutline.remove(angleToSite);
+  }
 }
 
 

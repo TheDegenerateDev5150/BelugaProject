@@ -21,7 +21,7 @@ public class CORSConfig implements WebMvcConfigurer {
         .allowedOrigins("http://localhost:4200", "http://localhost:8090",
             String.format("http://%s:4200", configuration.getProdBaseUrl()),
             String.format("http://%s:8090", configuration.getProdBaseUrl()))
-        .allowedMethods("GET")
+        .allowedMethods("GET", "DELETE")
         .allowCredentials(false);
   }
 }

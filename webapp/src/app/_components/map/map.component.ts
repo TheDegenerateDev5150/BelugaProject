@@ -2232,6 +2232,7 @@ export class MapComponent implements OnInit {
     this.outlineDataPoint = {
       flightId: this.getValueOrDefault(outlinePoint.flightId),
       hex: this.getValueOrDefault(outlinePoint.hex),
+      angleToSite: outlinePoint.angleToSite,
       attributes: this.createAttributes([
         {
           key: 'Latitude',
@@ -4143,5 +4144,19 @@ export class MapComponent implements OnInit {
       : this.resetAllDrawnCircles();
 
     if (this.showRoute) this.updateShowRoute();
+  }
+
+  public removeOutlineDataPoint() {
+    const angleToSite = this.outlineDataPoint.angleToSite;
+    if (angleToSite == undefined) return;
+
+    this.serverService
+      .deleteRangeOutlinePoint(this.selectedFeederUpdate, angleToSite)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe();
+
+    this.fetchActualOutline();
+
+    this.outlineDataPoint = undefined;
   }
 }

@@ -157,4 +157,7 @@ export class Globals {
 
   static urlGetLocationFromPlaceInput =
     'http://' + Globals.serverUrl + ':8080/getLocationFromInput';
+
+  static urlDeleteRangeOutlinePoint =
+    'http://' + Globals.serverUrl + ':8080/deleteRangeOutlinePoint';
 }

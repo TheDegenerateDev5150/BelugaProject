@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Aircraft } from '../../_classes/aircraft';
 import { Globals } from 'src/app/_common/globals';
@@ -211,6 +210,19 @@ export class ServerService {
     params = params.append('inputPlace', inputPlace.toString());
 
     return this.httpClient.get<any>(Globals.urlGetLocationFromPlaceInput, {
+      params: params,
+    });
+  }
+
+  deleteRangeOutlinePoint(
+    selectedFeeder: any,
+    angleToSite: number,
+  ): Observable<any> {
+    let params = new HttpParams();
+    params = params.append('selectedFeeder', selectedFeeder.toString());
+    params = params.append('angleToSite', angleToSite.toString());
+
+    return this.httpClient.delete<any>(Globals.urlDeleteRangeOutlinePoint, {
       params: params,
     });
   }

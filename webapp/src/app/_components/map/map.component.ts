@@ -2233,6 +2233,7 @@ export class MapComponent implements OnInit {
       flightId: this.getValueOrDefault(outlinePoint.flightId),
       hex: this.getValueOrDefault(outlinePoint.hex),
       angleToSite: outlinePoint.angleToSite,
+      feederName: outlinePoint.feeder,
       attributes: this.createAttributes([
         {
           key: 'Latitude',
@@ -4148,10 +4149,11 @@ export class MapComponent implements OnInit {
 
   public removeOutlineDataPoint() {
     const angleToSite = this.outlineDataPoint.angleToSite;
-    if (angleToSite == undefined) return;
+    const feeder = this.outlineDataPoint.feederName;
+    if (angleToSite == undefined || feeder == undefined) return;
 
     this.serverService
-      .deleteRangeOutlinePoint(this.selectedFeederUpdate, angleToSite)
+      .deleteRangeOutlinePoint(feeder, angleToSite)
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe();
 

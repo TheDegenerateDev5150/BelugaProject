@@ -238,6 +238,8 @@ public class AircraftTrailService {
     if (selectedFeeder == null || selectedFeeder.isEmpty() || angleToSite == null) return;
 
     final Map<Integer, AircraftTrail> feederOutline = actualOutlineMap.get(selectedFeeder);
+    if (feederOutline == null) return;
+
     feederOutline.remove(angleToSite);
   }
 }
